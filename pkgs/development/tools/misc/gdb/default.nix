@@ -71,7 +71,7 @@ stdenv.mkDerivation rec {
   # darwin build fails with format hardening since v7.12
   hardeningDisable = lib.optionals stdenv.isDarwin [ "format" ];
 
-  NIX_CFLAGS_COMPILE = "-Wno-format-nonliteral";
+  NIX_CFLAGS_COMPILE = "-Wno-format-nonliteral" + lib.optionalString stdenv.hostPlatform.isRiscV " -Wno-error";
 
   configurePlatforms = [ "build" "host" "target" ];
 
