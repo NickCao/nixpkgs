@@ -18615,9 +18615,14 @@ with pkgs;
 
   jhiccup = callPackage ../development/tools/java/jhiccup { };
 
-  valgrind = callPackage ../development/tools/analysis/valgrind {
-    inherit (buildPackages.darwin) xnu bootstrap_cmds;
-  };
+  valgrind = if stdenv.hostPlatform.system == "riscv64-linux" then
+    (callPackage ../development/tools/analysis/valgrind-riscv64 {
+      inherit (buildPackages.darwin) xnu bootstrap_cmds;
+    }) else
+    (callPackage ../development/tools/analysis/valgrind {
+      inherit (buildPackages.darwin) xnu bootstrap_cmds;
+    });
+
   valgrind-light = (res.valgrind.override { gdb = null; }).overrideAttrs (oldAttrs: {
     meta = oldAttrs.meta // { description = "${oldAttrs.meta.description} (without GDB)"; };
   });
