@@ -18052,9 +18052,13 @@ with pkgs;
 
   jhiccup = callPackage ../development/tools/java/jhiccup { };
 
-  valgrind = callPackage ../development/tools/analysis/valgrind {
-    inherit (buildPackages.darwin) xnu bootstrap_cmds cctools;
-  };
+  valgrind = if stdenv.hostPlatform.system == "riscv64-linux" then
+    (callPackage ../development/tools/analysis/valgrind-riscv64 {
+      inherit (buildPackages.darwin) xnu bootstrap_cmds cctools;
+    }) else
+    (callPackage ../development/tools/analysis/valgrind {
+      inherit (buildPackages.darwin) xnu bootstrap_cmds cctools;
+    });
   valgrind-light = res.valgrind.override { gdb = null; };
 
   valkyrie = callPackage ../development/tools/analysis/valkyrie { };
