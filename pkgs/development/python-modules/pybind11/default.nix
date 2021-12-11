@@ -46,6 +46,9 @@ buildPythonPackage rec {
     "-DPYTHON_EXECUTABLE:FILEPATH=${python.pythonForBuild.interpreter}"
   ] ++ lib.optionals (python.isPy3k && !stdenv.cc.isClang) [
     "-DPYBIND11_CXX_STANDARD=-std=c++17"
+  ] ++ lib.optionals (stdenv.buildPlatform != stdenv.hostPlatform) [
+    "-DPYBIND11_NOPYTHON=ON"
+    "-DBUILD_TESTING=OFF"
   ];
 
   postBuild = ''
