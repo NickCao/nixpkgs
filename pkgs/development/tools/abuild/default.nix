@@ -50,7 +50,8 @@ stdenv.mkDerivation rec {
 
   patchPhase = ''
     substituteInPlace ./Makefile \
-      --replace 'chmod 4555' '#chmod 4555'
+      --replace 'chmod 4555' '#chmod 4555' \
+      --replace 'pkg-config' "$PKG_CONFIG"
   '';
 
   makeFlags = [
