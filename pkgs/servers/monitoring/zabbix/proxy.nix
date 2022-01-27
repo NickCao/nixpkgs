@@ -50,7 +50,7 @@ in
         "--with-zlib=${zlib}"
       ]
       ++ optional odbcSupport "--with-unixodbc"
-      ++ optional snmpSupport "--with-net-snmp"
+      ++ optional snmpSupport "--with-net-snmp=${net-snmp.dev}/bin/net-snmp-config"
       ++ optional sqliteSupport "--with-sqlite3=${sqlite.dev}"
       ++ optional sshSupport "--with-ssh2=${libssh2.dev}"
       ++ optional mysqlSupport "--with-mysql"
@@ -59,6 +59,11 @@ in
       prePatch = ''
         find database -name data.sql -exec sed -i 's|/usr/bin/||g' {} +
       '';
+
+      makeFlags = [
+        "AR:=$(AR)"
+        "RANLIB:=$(RANLIB)"
+      ];
 
       postInstall = ''
         mkdir -p $out/share/zabbix/database/
