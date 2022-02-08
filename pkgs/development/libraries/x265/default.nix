@@ -34,6 +34,7 @@ let
     (mkFlag ppaSupport "ENABLE_PPA")
     (mkFlag vtuneSupport "ENABLE_VTUNE")
     (mkFlag werrorSupport "WARNINGS_AS_ERRORS")
+    (mkFlag (!stdenv.hostPlatform.isRiscV) "ENABLE_ASSEMBLY")
   ];
 
   cmakeStaticLibFlags = [
