@@ -149,6 +149,7 @@ in {
       inherit (buildPackages.darwin) autoSignDarwinBinariesHook xattr;
       buildTargetLlvmPackages = pkgsBuildTarget.llvmPackages_12;
       llvmPackages = pkgs.llvmPackages_12;
+      libffi = null;
     };
     ghc90 = ghc902;
     ghc924 = callPackage ../development/compilers/ghc/9.2.4.nix {

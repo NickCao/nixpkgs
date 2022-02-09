@@ -1,7 +1,7 @@
 { lib, stdenv, pkgsBuildTarget, pkgsHostTarget, targetPackages
 
 # build-tools
-, bootPkgs
+, bootPkgs, autoreconfHook
 , autoconf, automake, coreutils, fetchurl, perl, python3, m4, sphinx, xattr
 , autoSignDarwinBinariesHook
 , bash
@@ -203,6 +203,22 @@ stdenv.mkDerivation (rec {
       url = "https://gitlab.haskell.org/ghc/ghc/-/commit/c6132c782d974a7701e7f6447bdcd2bf6db4299a.patch?merge_request_iid=7423";
       sha256 = "sha256-b4feGZIaKDj/UKjWTNY6/jH4s2iate0wAgMxG3rAbZI=";
     })
+    (fetchurl {
+       url = "https://raw.githubusercontent.com/felixonmars/archriscv-packages/master/ghc/0001-Limit-upper-version-of-Happy-for-ghc-9.2-18620.patch";
+       sha256 = "sha256-DrCD3AKHCYlcQl5Dy4lN6l5lb/h0tw7rzuUTwEbgu34=";
+    })
+    (fetchurl {
+       url = "https://raw.githubusercontent.com/felixonmars/archriscv-packages/master/ghc/0002-Check-for-libatomic-dependency-for-atomic-operations.patch";
+       sha256 = "sha256-gLWpM1HDzRf3neV7oN+di05wEhalL0sD4kQrf4G2cW4=";
+    })
+    (fetchurl {
+       url = "https://raw.githubusercontent.com/felixonmars/archriscv-packages/master/ghc/0003-Implement-riscv64-LLVM-backend.patch";
+      sha256 = "sha256-3Jc3FpwwU5LMurtUfovJc49QuzPvASCLg4jecAWglZc=";
+    })
+    (fetchurl {
+       url = "https://raw.githubusercontent.com/felixonmars/archriscv-packages/master/ghc/0004-Enable-tables-next-to-code-for-riscv64.patch";
+       sha256 = "sha256-G29wyqFFIDygRR5letRt7nUc0v+L0Kw8oB1iT/gYpT0=";
+    })
   ] ++ lib.optionals (stdenv.targetPlatform.isDarwin && stdenv.targetPlatform.isAarch64) [
 
     # Prevent the paths module from emitting symbols that we don't use
@@ -230,7 +246,7 @@ stdenv.mkDerivation (rec {
     export CC="${targetCC}/bin/${targetCC.targetPrefix}cc"
     export CXX="${targetCC}/bin/${targetCC.targetPrefix}c++"
     # Use gold to work around https://sourceware.org/bugzilla/show_bug.cgi?id=16177
-    export LD="${targetCC.bintools}/bin/${targetCC.bintools.targetPrefix}ld${lib.optionalString useLdGold ".gold"}"
+    export LD="${targetCC.bintools}/bin/${targetCC.bintools.targetPrefix}ld"
     export AS="${targetCC.bintools.bintools}/bin/${targetCC.bintools.targetPrefix}as"
     export AR="${targetCC.bintools.bintools}/bin/${targetCC.bintools.targetPrefix}ar"
     export NM="${targetCC.bintools.bintools}/bin/${targetCC.bintools.targetPrefix}nm"
@@ -311,7 +327,7 @@ stdenv.mkDerivation (rec {
   dontAddExtraLibs = true;
 
   nativeBuildInputs = [
-    perl autoconf automake m4 python3
+    perl autoconf automake m4 python3 autoreconfHook
     ghc bootPkgs.alex bootPkgs.happy bootPkgs.hscolour
   ] ++ lib.optionals (stdenv.isDarwin && stdenv.isAarch64) [
     autoSignDarwinBinariesHook
