@@ -2,7 +2,7 @@
 , meson, ninja, pkg-config, wayland-scanner, scdoc
 , wayland, libxkbcommon, pcre, json_c, libevdev
 , pango, cairo, libinput, libcap, pam, gdk-pixbuf, librsvg
-, wlroots, wayland-protocols, libdrm
+, wlroots, wayland-protocols, libdrm, fetchurl
 , nixosTests
 # Used by the NixOS module:
 , isNixOS ? false
@@ -34,6 +34,10 @@ stdenv.mkDerivation rec {
 
   patches = [
     ./load-configuration-from-etc.patch
+    (fetchurl {
+      url = "https://github.com/swaywm/sway/commit/9debeb40ceaeae9e577bddcc248a36d99f0a066f.patch";
+      sha256 = "sha256-P1n1+p+UoHkUShzM1s31vTO8xHoJLFlggwc52SmfH7U=";
+    })
 
     (substituteAll {
       src = ./fix-paths.patch;
