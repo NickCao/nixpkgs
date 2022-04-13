@@ -5,7 +5,7 @@
 , static ? stdenv.hostPlatform.isStatic # generates static libraries *only*
 , enableStatic ? static
 # these need to be ran on the host, thus disable when cross-compiling
-, buildContrib ? stdenv.hostPlatform == stdenv.buildPlatform
+, buildContrib ? stdenv.hostPlatform == stdenv.buildPlatform && !stdenv.hostPlatform.isRiscV
 , doCheck ? stdenv.hostPlatform == stdenv.buildPlatform
 , nix-update-script
 
