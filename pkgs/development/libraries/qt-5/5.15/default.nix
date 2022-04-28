@@ -7,7 +7,7 @@ Check for any minor version changes.
 
 */
 
-{ newScope
+{ newScope, splicePackages, pkgsBuildBuild, pkgsBuildHost, pkgsBuildTarget, pkgsHostHost, pkgsTargetTarget
 , lib, stdenv, fetchurl, fetchgit, fetchpatch, fetchFromGitHub, makeSetupHook, makeWrapper
 , bison, cups ? null, harfbuzz, libGL, perl
 , gstreamer, gst-plugins-base, gtk3, dconf
@@ -200,5 +200,13 @@ let
           ++ lib.optional stdenv.isLinux self.qtwayland.dev;
       } ../hooks/wrap-qt-apps-hook.sh;
     };
-
-in lib.makeScope newScope addPackages
+    otherSplices = {
+      selfBuildBuild = pkgsBuildBuild.qt515;
+      selfBuildHost = pkgsBuildHost.qt515;
+      selfBuildTarget = pkgsBuildTarget.qt515;
+      selfHostHost = pkgsHostHost.qt515;
+      selfTargetTarget = pkgsTargetTarget.qt515 or {};
+    };
+    keep = self: { };
+    extra = spliced0: { };
+in lib.makeScopeWithSplicing splicePackages newScope otherSplices keep extra addPackages
