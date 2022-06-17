@@ -169,6 +169,7 @@ stdenv.mkDerivation rec {
     ./skip-nohup-tests.patch
     ./skip-cgo-tests-1.15.patch
     ./go_no_vendor_checks-1.16.patch
+    ./riscv-sv57.patch
   ] ++ [
     # breaks under load: https://github.com/golang/go/issues/25628
     (if stdenv.isAarch32
