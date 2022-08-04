@@ -364,7 +364,7 @@ in
       '';
 
     boot.initrd.systemd.additionalUpstreamUnits = [
-      # TODO: "initrd-udevadm-cleanup-db.service" is commented out because of https://github.com/systemd/systemd/issues/12953
+      "initrd-udevadm-cleanup-db.service"
       "systemd-udevd-control.socket"
       "systemd-udevd-kernel.socket"
       "systemd-udevd.service"
