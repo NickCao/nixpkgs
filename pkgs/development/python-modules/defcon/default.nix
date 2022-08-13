@@ -30,14 +30,14 @@ buildPythonPackage rec {
 
   propagatedBuildInputs = [
     fonttools
+    unicodedata2
+    fs
   ];
 
   checkInputs = [
     fontpens
-    fs
     lxml
     pytestCheckHook
-    unicodedata2
   ];
 
   pythonImportsCheck = [
