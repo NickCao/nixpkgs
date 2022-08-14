@@ -122,7 +122,7 @@ in {
       wantedBy = [ "multi-user.target" ];
       wants = [ "network-online.target" ] ++ cfg.serviceDependencies;
       after = [ "network-online.target" ] ++ cfg.serviceDependencies;
-      path = [ pkgs.lottieconverter ];
+      path = [ pkgs.lottieconverter pkgs.ffmpeg-full ];
 
       preStart = ''
         # Not all secrets can be passed as environment variable (yet)
