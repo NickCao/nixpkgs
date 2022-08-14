@@ -5,6 +5,7 @@
 , pkg-config
 , cmake
 , gtest
+, valgrind
 }:
 
 stdenv.mkDerivation rec {
@@ -34,27 +35,24 @@ stdenv.mkDerivation rec {
       sed -i -e "s/-Werror//g" -e "s/-march=native//g"
   '';
 
-  nativeBuildInputs = [ pkg-config cmake ];
-
-  cmakeFlags = [
-    "-DGTEST_SOURCE_DIR=${gtest.dev}/include"
-  ] ++ lib.optionals (!doCheck) [
-    "-DRAPIDJSON_BUILD_TESTS=OFF"
+  nativeBuildInputs = [
+    cmake
+    pkg-config
   ];
 
-  checkInputs = [
+  buildInputs = lib.optionals doCheck [
     gtest
   ];
 
-  checkPhase = ''
-    runHook preCheck
-
-    ctest -E '.*valgrind.*'
-
-    runHook postCheck
-  '';
+  cmakeFlags = lib.optionals doCheck [
+    "-DGTEST_SOURCE_DIR=${gtest.dev}/include"
+  ];
 
   doCheck = !stdenv.hostPlatform.isStatic;
+
+  checkInputs = [
+    valgrind
+  ];
 
   meta = with lib; {
     description = "Fast JSON parser/generator for C++ with both SAX/DOM style API";
