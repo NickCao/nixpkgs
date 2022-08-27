@@ -1,0 +1,13 @@
+diff --git a/gcc/system.h b/gcc/system.h
+index f8d42ff6815..be057c74076 100644
+--- a/gcc/system.h
++++ b/gcc/system.h
+@@ -693,7 +693,7 @@ extern int vsnprintf (char *, size_t, const char *, va_list);
+ # endif
+ #endif
+ 
+-#if defined (ENABLE_PLUGIN) && defined (HAVE_DLFCN_H)
++#ifdef HAVE_DLFCN_H
+ /* If plugin support is enabled, we could use libdl.  */
+ #include <dlfcn.h>
+ #endif
