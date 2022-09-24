@@ -16,4 +16,7 @@ qtModule {
     substituteInPlace "$out/lib/cmake/Qt6Qml/Qt6QmlMacros.cmake" \
       --replace ''\'''${QT6_INSTALL_PREFIX}' "$out"
   '';
+  NIX_CFLAGS_COMPILE = [
+    "-fmacro-prefix-map=${qtbase.dev}=qtbase.dev"
+  ];
 }
