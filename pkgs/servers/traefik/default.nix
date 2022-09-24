@@ -1,4 +1,4 @@
-{ lib, fetchzip, buildGoModule, nixosTests }:
+{ lib, fetchzip, buildGoModule, pkgsBuildBuild, nixosTests }:
 
 buildGoModule rec {
   pname = "traefik";
@@ -16,6 +16,9 @@ buildGoModule rec {
   subPackages = [ "cmd/traefik" ];
 
   preBuild = ''
+    GOOS="${pkgsBuildBuild.go.GOOS}" \
+    GOARCH="${pkgsBuildBuild.go.GOARCH}" \
+    CC="${pkgsBuildBuild.stdenv.cc}/bin/cc" \
     go generate
 
     CODENAME=$(awk -F "=" '/CODENAME=/ { print $2}' script/binary)
