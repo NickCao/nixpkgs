@@ -3,10 +3,12 @@
 , stdenv
 , qtbase
 , qtdeclarative
+, qtquick3d
 , qtshadertools
 , qtsvg
 , pkg-config
 , alsa-lib
+, ffmpeg
 , gstreamer
 , gst-plugins-base
 , libpulseaudio
@@ -14,11 +16,31 @@
 , elfutils
 , libunwind
 , orc
+, libva
 }:
 
 qtModule {
   pname = "qtmultimedia";
-  qtInputs = [ qtbase qtdeclarative qtsvg qtshadertools ];
-  nativeBuildInputs = [ pkg-config ];
-  buildInputs = [ gstreamer gst-plugins-base libpulseaudio elfutils libunwind alsa-lib wayland orc ];
+  qtInputs = [
+    qtbase
+    qtdeclarative
+    qtquick3d
+    qtsvg
+    qtshadertools
+  ];
+  nativeBuildInputs = [
+    pkg-config
+  ];
+  buildInputs = [
+    ffmpeg
+    gstreamer
+    gst-plugins-base
+    libpulseaudio
+    elfutils
+    libunwind
+    alsa-lib
+    wayland
+    orc
+    libva
+  ];
 }
