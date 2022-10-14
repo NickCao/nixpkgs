@@ -1,0 +1,70 @@
+commit b73e17bd95e41ece484111f6d1eea02b7d991fbb
+Author: Nick Cao <nickcao@nichi.co>
+Date:   Fri Oct 14 14:16:17 2022 +0800
+
+    treewide: do not hardcode CC and AR, instead rely on implicit variables
+    
+    see https://www.gnu.org/software/make/manual/html_node/Implicit-Variables.html for more info
+
+diff --git a/apfsck/Makefile b/apfsck/Makefile
+index 2ed5f9d..8b8e897 100644
+--- a/apfsck/Makefile
++++ b/apfsck/Makefile
+@@ -16,7 +16,7 @@ override CFLAGS += -Wall -Wno-address-of-packed-member -fno-strict-aliasing -I$(
+ 
+ apfsck: $(OBJS) $(LIBRARY)
+ 	@echo '  Linking...'
+-	@gcc $(CFLAGS) $(LDFLAGS) -o apfsck $(OBJS) $(LIBRARY)
++	@$(CC) $(CFLAGS) $(LDFLAGS) -o apfsck $(OBJS) $(LIBRARY)
+ 	@echo '  Build complete'
+ 
+ # Build the common libraries
+@@ -28,7 +28,7 @@ FORCE:
+ 
+ %.o: %.c
+ 	@echo '  Compiling $<...'
+-	@gcc $(CFLAGS) -o $@ -MMD -MP -c $<
++	@$(CC) $(CFLAGS) -o $@ -MMD -MP -c $<
+ ifdef SPARSE_VERSION
+ 	@sparse $(CFLAGS) $<
+ endif
+diff --git a/lib/Makefile b/lib/Makefile
+index 7d0dd65..8192363 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -8,11 +8,11 @@ override CFLAGS += -Wall -fno-strict-aliasing -I$(CURDIR)/../include
+ 
+ libapfs.a: $(OBJS)
+ 	@echo '  Assembling library archive...'
+-	@ar rcs $@ $^
++	@$(AR) rcs $@ $^
+ 
+ %.o: %.c
+ 	@echo '  Compiling $<...'
+-	@gcc $(CFLAGS) -o $@ -MMD -MP -c $<
++	@$(CC) $(CFLAGS) -o $@ -MMD -MP -c $<
+ ifdef SPARSE_VERSION
+ 	@sparse $(CFLAGS) $<
+ endif
+diff --git a/mkapfs/Makefile b/mkapfs/Makefile
+index d1ac2f5..ce45e1b 100644
+--- a/mkapfs/Makefile
++++ b/mkapfs/Makefile
+@@ -15,7 +15,7 @@ override CFLAGS += -Wall -Wno-address-of-packed-member -fno-strict-aliasing -I$(
+ 
+ mkapfs: $(OBJS) $(LIBRARY)
+ 	@echo '  Linking...'
+-	@gcc $(CFLAGS) $(LDFLAGS) -o mkapfs $(OBJS) $(LIBRARY)
++	@$(CC) $(CFLAGS) $(LDFLAGS) -o mkapfs $(OBJS) $(LIBRARY)
+ 	@echo '  Build complete'
+ 
+ # Build the common libraries
+@@ -27,7 +27,7 @@ FORCE:
+ 
+ %.o: %.c
+ 	@echo '  Compiling $<...'
+-	@gcc $(CFLAGS) -o $@ -MMD -MP -c $<
++	@$(CC) $(CFLAGS) -o $@ -MMD -MP -c $<
+ ifdef SPARSE_VERSION
+ 	@sparse $(CFLAGS) $<
+ endif
