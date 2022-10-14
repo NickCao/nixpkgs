@@ -14,6 +14,10 @@ stdenv.mkDerivation {
     sha256 = "sha256-cDxXWfXl1VxdpKBcU00ULWlidzg6kQFG4AGEu5DBCaw=";
   };
 
+  patches = [
+    ./cross.patch
+  ];
+
   buildPhase = ''
     runHook preBuild
     make -C apfsck $makeFlags
