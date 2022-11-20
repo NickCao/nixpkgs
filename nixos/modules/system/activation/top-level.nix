@@ -3,12 +3,25 @@
 with lib;
 
 let
+  children =
+    mapAttrs
+      (childName: childConfig: childConfig.configuration.system.build.toplevel)
+      config.specialisation;
+
   systemBuilder =
     let
       kernelPath = "${config.boot.kernelPackages.kernel}/" +
         "${config.system.boot.loader.kernelFile}";
       initrdPath = "${config.system.build.initialRamdisk}/" +
         "${config.system.boot.loader.initrdFile}";
+
+      bootSpec = import ./bootspec.nix {
+        inherit
+          config
+          pkgs
+          lib
+          children;
+      };
     in ''
       mkdir $out
 
@@ -78,6 +91,10 @@ let
       ${config.system.systemBuilderCommands}
 
       echo -n "${toString config.system.extraDependencies}" > $out/extra-dependencies
+
+      ${optionalString (!config.boot.isContainer) ''
+        ${bootSpec.writer}
+      ''}
 
       ${config.system.extraSystemBuilderCmds}
     '';
