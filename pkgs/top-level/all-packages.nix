@@ -3510,6 +3510,8 @@ with pkgs;
 
   consul-alerts = callPackage ../servers/monitoring/consul-alerts { };
 
+  consul-dataplane = callPackage ../servers/consul-dataplane { };
+
   consul-template = callPackage ../tools/system/consul-template { };
 
   copyright-update = callPackage ../tools/text/copyright-update { };
