@@ -15741,6 +15741,8 @@ with pkgs;
     stdenv = rocmClangStdenv;
   };
 
+  hip-cpu = callPackage ../development/libraries/hip-cpu { };
+
   hipcc = callPackage ../development/compilers/hipcc {
     inherit (llvmPackages_rocm) llvm;
     stdenv = rocmClangStdenv;
