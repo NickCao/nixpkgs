@@ -1,4 +1,5 @@
 { lib
+, stdenv
 , python3
 , fetchFromGitHub
 
@@ -9,7 +10,7 @@
 , git
 , nix
 
-, withAutocomplete ? true
+, withAutocomplete ? stdenv.buildPlatform.canExecute stdenv.hostPlatform
 , withSandboxSupport ? false
 , withNom ? false
 }:
