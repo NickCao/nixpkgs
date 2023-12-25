@@ -1,6 +1,7 @@
 { lib
 , stdenv
 , fetchurl
+, fetchpatch2
 , pkg-config
 , glib
 , which
@@ -19,6 +20,15 @@ stdenv.mkDerivation rec {
     url = "https://github.com/NetworkBlockDevice/nbd/releases/download/nbd-${version}/nbd-${version}.tar.xz";
     hash = "sha256-9cj9D8tXsckmWU0OV/NWQy7ghni+8dQNCI8IMPDL3Qo=";
   };
+
+  patches = [
+    # fix port setting from nbdtab
+    # https://github.com/NetworkBlockDevice/nbd/pull/154
+    (fetchpatch2 {
+      url = "https://github.com/NetworkBlockDevice/nbd/commit/c9f38fcc468c8cddeeb476328fbd5a16afe9ad07.patch";
+      hash = "sha256-1TbXcZtL0XdQ6Fcc3sA4gzcaL6aN9+9LjMUGK5PGiU4=";
+    })
+  ];
 
   nativeBuildInputs = [
     pkg-config
