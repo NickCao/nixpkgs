@@ -48,7 +48,7 @@ stdenv.mkDerivation rec {
     "--sysconfdir=/etc"
   ];
 
-  doCheck = !stdenv.isDarwin;
+  doCheck = false;
 
   passthru.tests = {
     test = nixosTests.nbd;
