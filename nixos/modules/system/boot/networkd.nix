@@ -2987,19 +2987,6 @@ let
 
       systemd.contents."/etc/systemd/networkd.conf" = renderConfig cfg.config;
 
-      systemd.services.systemd-networkd = {
-        wantedBy = [ "initrd.target" ];
-        # These before and conflicts lines can be removed when this PR makes it into a release:
-        # https://github.com/systemd/systemd/pull/27791
-        before = ["initrd-switch-root.target"];
-        conflicts = ["initrd-switch-root.target"];
-      };
-      systemd.sockets.systemd-networkd = {
-        wantedBy = [ "initrd.target" ];
-        before = ["initrd-switch-root.target"];
-        conflicts = ["initrd-switch-root.target"];
-      };
-
       systemd.services.systemd-network-generator.wantedBy = [ "sysinit.target" ];
 
       systemd.storePaths = [
