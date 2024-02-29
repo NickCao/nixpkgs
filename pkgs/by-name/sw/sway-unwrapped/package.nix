@@ -1,4 +1,4 @@
-{ lib, stdenv, fetchFromGitHub, substituteAll, swaybg
+{ lib, stdenv, fetchFromGitHub, substituteAll, swaybg, fetchpatch
 , meson, ninja, pkg-config, wayland-scanner, scdoc
 , libGL, wayland, libxkbcommon, pcre2, json_c, libevdev
 , pango, cairo, libinput, gdk-pixbuf, librsvg
@@ -31,6 +31,23 @@ stdenv.mkDerivation (finalAttrs: {
       inherit swaybg;
     })
 
+   # text_input: Implement input-method popups
+   # https://github.com/swaywm/sway/pull/7226
+    (fetchpatch rec {
+      name = "0001-text_input-Implement-input-method-popups.patch";
+      url = "https://aur.archlinux.org/cgit/aur.git/plain/${name}?h=sway-im&id=b8434b3ad9e8c6946dbf7b14b0f7ef5679452b94";
+      hash = "sha256-A+rBaWMWs616WllVoo21AJaf9lxg/oCG0b9tHLfuJII=";
+    })
+    (fetchpatch rec {
+      name = "0002-chore-fractal-scale-handle.patch";
+      url = "https://aur.archlinux.org/cgit/aur.git/plain/${name}?h=sway-im&id=b8434b3ad9e8c6946dbf7b14b0f7ef5679452b94";
+      hash = "sha256-YOFm0A4uuRSuiwnvF9xbp8Wl7oGicFGnq61vLegqJ0E=";
+    })
+    (fetchpatch rec {
+      name = "0003-chore-left_pt-on-method-popup.patch";
+      url = "https://aur.archlinux.org/cgit/aur.git/plain/${name}?h=sway-im&id=b8434b3ad9e8c6946dbf7b14b0f7ef5679452b94";
+      hash = "sha256-PzhQBRpyB1WhErn05UBtBfaDW5bxnQLRKWu8jy7dEiM=";
+    })
   ] ++ lib.optionals (!finalAttrs.isNixOS) [
     # References to /nix/store/... will get GC'ed which causes problems when
     # copying the default configuration:
