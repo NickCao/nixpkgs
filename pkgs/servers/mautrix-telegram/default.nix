@@ -22,14 +22,14 @@ let
 in
 python.pkgs.buildPythonPackage rec {
   pname = "mautrix-telegram";
-  version = "0.15.1-unstable-2024-04-08";
+  version = "0.15.1-unstable-2024-05-24";
   disabled = python.pythonOlder "3.10";
 
   src = fetchFromGitHub {
     owner = "mautrix";
     repo = "telegram";
-    rev = "43d17a335b1dd45fc81f3bed8ad6a7ee9f7a708f";
-    hash = "sha256-3+nGk7o5Cetqa9kcgW+DVLFMtu8BL2B8fFHEwS7okic=";
+    rev = "f6cb26f7f53089488e085b45add5303fa283dc3e";
+    hash = "sha256-QEGw2pJjNqlV3Z6Ime6Xbsc0tlhgdaHNoHZ+AjS05bI=";
   };
 
   format = "setuptools";
