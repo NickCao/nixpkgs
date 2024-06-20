@@ -44,5 +44,6 @@ stdenv.mkDerivation (finalAttrs: {
     license = with lib.licenses; [ bsd2 ];
     maintainers = with lib.maintainers; [ AndersonTorres ];
     platforms = lib.platforms.unix ++ lib.platforms.windows;
+    badPlatforms = [ lib.systems.inspect.patterns.isRiscV ];
   };
 })
