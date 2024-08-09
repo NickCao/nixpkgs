@@ -12,6 +12,7 @@
 , lcms
 , libiconv
 , libintl
+, glib
 , libjpeg
 , ninja
 , openjpeg
@@ -76,6 +77,7 @@ stdenv.mkDerivation (finalAttrs: rec {
     ninja
     pkg-config
     python3
+    glib
   ] ++ lib.optionals introspectionSupport [
     gobject-introspection
   ];
