@@ -11,6 +11,7 @@
   json-glib,
   gettext,
   libsecret,
+  libsoup_3,
   python3,
   polkit,
   networkmanager,
@@ -124,6 +125,7 @@ stdenv.mkDerivation (finalAttrs: {
     libxslt.bin
     asciidoc
     gobject-introspection
+    gjs
   ];
 
   buildInputs = [
@@ -141,7 +143,9 @@ stdenv.mkDerivation (finalAttrs: {
     gjs
     mutter
     libpulseaudio
+  ] ++ lib.optionals (stdenv.buildPlatform.canExecute stdenv.hostPlatform) [
     evolution-data-server-gtk4
+  ] ++ [
     libical
     gtk4
     libadwaita
@@ -149,10 +153,14 @@ stdenv.mkDerivation (finalAttrs: {
     geoclue2
     adwaita-icon-theme
     gnome-bluetooth
+  ] ++ lib.optionals (stdenv.buildPlatform.canExecute stdenv.hostPlatform) [
     gnome-clocks # schemas needed
+  ] ++ [
     at-spi2-core
     upower
+  ] ++ lib.optionals (stdenv.buildPlatform.canExecute stdenv.hostPlatform) [
     ibus
+  ] ++ [
     gnome-desktop
     gnome-settings-daemon
     mesa
@@ -170,6 +178,7 @@ stdenv.mkDerivation (finalAttrs: {
     # not declared at build time, but typelib is needed at runtime
     libgweather
     libnma-gtk4
+    libsoup_3
 
     # for gnome-extension tool
     bash-completion
@@ -191,6 +200,13 @@ stdenv.mkDerivation (finalAttrs: {
     # We can generate it ourselves.
     rm -f man/gnome-shell.1
     rm data/theme/gnome-shell-{light,dark}.css
+  '' + lib.optionalString (!stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
+    substituteInPlace meson.build \
+      --replace-fail "ecal_dep = dependency('libecal-2.0', version: ecal_req)" "" \
+      --replace-fail "eds_dep = dependency('libedataserver-1.2', version: eds_req)" "" \
+      --replace-fail "ibus_dep = dependency('ibus-1.0', version: ibus_req)" ""
+    substituteInPlace src/meson.build \
+      --replace-fail "subdir('calendar-server')" ""
   '';
 
   postInstall = ''
