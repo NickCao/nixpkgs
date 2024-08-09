@@ -76,6 +76,8 @@ stdenv.mkDerivation (finalAttrs: rec {
     ninja
     pkg-config
     python3
+  ] ++ lib.optionals introspectionSupport [
+    gobject-introspection
   ];
 
   buildInputs = [
@@ -100,8 +102,6 @@ stdenv.mkDerivation (finalAttrs: rec {
     nss
   ] ++ lib.optionals (qt5Support || qt6Support) [
     qtbase
-  ] ++ lib.optionals introspectionSupport [
-    gobject-introspection
   ] ++ lib.optionals gpgmeSupport [
     gpgme
   ];
