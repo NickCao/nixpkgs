@@ -15,6 +15,7 @@
   gnome-settings-daemon,
   gnome-shell,
   dbus,
+  dbus-glib,
   json-glib,
   libICE,
   xmlto,
@@ -67,6 +68,7 @@ stdenv.mkDerivation (finalAttrs: {
     docbook_xml_dtd_412
     python3
     dbus # for DTD
+    dbus-glib # gdbus-codegen
   ];
 
   buildInputs = [
