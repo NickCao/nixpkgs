@@ -28,7 +28,7 @@
 , ninja
 , libkrb5
 , openldap
-, enableOAuth2 ? stdenv.hostPlatform.isLinux
+, enableOAuth2 ? stdenv.hostPlatform.isLinux && stdenv.buildPlatform.canExecute stdenv.hostPlatform
 , webkitgtk_4_1
 , webkitgtk_6_0
 , json-glib
