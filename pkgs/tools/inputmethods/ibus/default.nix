@@ -26,7 +26,7 @@
 , python3
 , json-glib
 , libnotify ? null
-, enableUI ? true
+, enableUI ? stdenv.buildPlatform.canExecute stdenv.hostPlatform
 , withWayland ? true
 , libxkbcommon
 , wayland
@@ -37,14 +37,6 @@
 
 let
   python3Runtime = python3.withPackages (ps: with ps; [ pygobject3 ]);
-  python3BuildEnv = python3.buildEnv.override {
-    # ImportError: No module named site
-    postBuild = ''
-      makeWrapper ${glib.dev}/bin/gdbus-codegen $out/bin/gdbus-codegen --unset PYTHONPATH
-      makeWrapper ${glib.dev}/bin/glib-genmarshal $out/bin/glib-genmarshal --unset PYTHONPATH
-      makeWrapper ${glib.dev}/bin/glib-mkenums $out/bin/glib-mkenums --unset PYTHONPATH
-    '';
-  };
   # make-dconf-override-db.sh needs to execute dbus-launch in the sandbox,
   # it will fail to read /etc/dbus-1/session.conf unless we add this flag
   dbus-launch = runCommand "sandbox-dbus-launch"
@@ -89,6 +81,9 @@ stdenv.mkDerivation rec {
     cp ${buildPackages.gtk-doc}/share/gtk-doc/data/gtk-doc.make .
     substituteInPlace bus/services/org.freedesktop.IBus.session.GNOME.service.in --replace "ExecStart=sh" "ExecStart=${runtimeShell}"
     substituteInPlace bus/services/org.freedesktop.IBus.session.generic.service.in --replace "ExecStart=sh" "ExecStart=${runtimeShell}"
+  '' + lib.optionalString (!stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
+    substituteInPlace tools/Makefile.am \
+      --replace "bin_PROGRAMS = ibus" ""
   '';
 
   preAutoreconf = "touch ChangeLog";
@@ -97,8 +92,9 @@ stdenv.mkDerivation rec {
     # The `AX_PROG_{CC,CXX}_FOR_BUILD` autoconf macros can pick up unwrapped GCC binaries,
     # so we set `{CC,CXX}_FOR_BUILD` to override that behavior.
     # https://github.com/NixOS/nixpkgs/issues/21751
-    "CC_FOR_BUILD=${stdenv.cc}/bin/cc"
-    "CXX_FOR_BUILD=${stdenv.cc}/bin/c++"
+    "CC_FOR_BUILD=${buildPackages.stdenv.cc}/bin/cc"
+    "CXX_FOR_BUILD=${buildPackages.stdenv.cc}/bin/c++"
+    "GLIB_COMPILE_RESOURCES=${buildPackages.glib.dev}/bin/glib-compile-resources"
     "--disable-memconf"
     (lib.enableFeature (dconf != null) "dconf")
     (lib.enableFeature (libnotify != null) "libnotify")
@@ -110,11 +106,21 @@ stdenv.mkDerivation rec {
     "--with-unicode-emoji-dir=${unicode-emoji}/share/unicode/emoji"
     "--with-emoji-annotation-dir=${cldr-annotations}/share/unicode/cldr/common/annotations"
     "--with-ucd-dir=${unicode-character-database}/share/unicode"
+  ] ++ lib.optionals (!stdenv.buildPlatform.canExecute stdenv.hostPlatform) [
+    "--disable-vala"
+    "--disable-engine"
   ];
 
   makeFlags = [
     "test_execsdir=${placeholder "installedTests"}/libexec/installed-tests/ibus"
     "test_sourcesdir=${placeholder "installedTests"}/share/installed-tests/ibus"
+  ];
+
+  strictDeps = true;
+
+  depsBuildBuild = [
+    buildPackages.stdenv.cc
+    pkg-config
   ];
 
   nativeBuildInputs = [
@@ -123,11 +129,12 @@ stdenv.mkDerivation rec {
     gettext
     makeWrapper
     pkg-config
-    python3BuildEnv
+    python3
     vala
     wrapGAppsHook3
     dbus-launch
     gobject-introspection
+    glib
   ];
 
   propagatedBuildInputs = [

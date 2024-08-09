@@ -153,14 +153,10 @@ stdenv.mkDerivation (finalAttrs: {
     geoclue2
     adwaita-icon-theme
     gnome-bluetooth
-  ] ++ lib.optionals (stdenv.buildPlatform.canExecute stdenv.hostPlatform) [
     gnome-clocks # schemas needed
-  ] ++ [
     at-spi2-core
     upower
-  ] ++ lib.optionals (stdenv.buildPlatform.canExecute stdenv.hostPlatform) [
     ibus
-  ] ++ [
     gnome-desktop
     gnome-settings-daemon
     mesa
