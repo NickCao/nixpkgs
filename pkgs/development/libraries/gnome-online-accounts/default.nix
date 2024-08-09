@@ -8,7 +8,7 @@
 , ninja
 , libxslt
 , gtk4
-, enableBackend ? stdenv.hostPlatform.isLinux
+, enableBackend ? stdenv.hostPlatform.isLinux && stdenv.buildPlatform.canExecute stdenv.hostPlatform
 , json-glib
 , libadwaita
 , librest_1_0
@@ -64,6 +64,7 @@ stdenv.mkDerivation (finalAttrs: {
   ];
 
   buildInputs = [
+    dbus
     gcr_4
     glib
     glib-networking
