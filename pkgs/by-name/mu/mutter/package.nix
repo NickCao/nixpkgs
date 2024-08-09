@@ -48,6 +48,7 @@
   libgudev,
   libwacom,
   libSM,
+  libGL,
   xwayland,
   mesa,
   meson,
@@ -104,7 +105,6 @@ stdenv.mkDerivation (finalAttrs: {
     desktop-file-utils
     gettext
     libxcvt
-    mesa # needed for gbm
     meson
     ninja
     xvfb-run
@@ -120,6 +120,7 @@ stdenv.mkDerivation (finalAttrs: {
   buildInputs = [
     cairo
     egl-wayland
+    mesa # needed for gbm
     glib
     gnome-desktop
     gnome-settings-daemon
@@ -136,6 +137,7 @@ stdenv.mkDerivation (finalAttrs: {
     libstartup_notification
     libwacom
     libSM
+    libGL
     colord
     lcms2
     pango
@@ -174,7 +176,7 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   postInstall = ''
-    ${glib.dev}/bin/glib-compile-schemas "$out/share/glib-2.0/schemas"
+    glib-compile-schemas "$out/share/glib-2.0/schemas"
   '';
 
   postFixup = ''
