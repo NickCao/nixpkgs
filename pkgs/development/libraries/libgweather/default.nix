@@ -16,7 +16,8 @@
 , geocode-glib_2
 , vala
 , gnome
-, withIntrospection ? stdenv.buildPlatform == stdenv.hostPlatform
+, withIntrospection ? true
+, buildPackages
 }:
 
 stdenv.mkDerivation rec {
@@ -65,6 +66,7 @@ stdenv.mkDerivation rec {
   mesonFlags = [
     "-Dzoneinfo_dir=${tzdata}/share/zoneinfo"
     (lib.mesonBool "introspection" withIntrospection)
+    (lib.mesonBool "enable_vala" withIntrospection)
   ] ++ lib.optionals stdenv.hostPlatform.isDarwin [
     "-Dc_args=-D_DARWIN_C_SOURCE"
   ];
@@ -83,6 +85,15 @@ stdenv.mkDerivation rec {
     # TODO: send upstream because downstream users can use the option to disable gir if they don't have it working
     substituteInPlace libgweather/meson.build \
       --replace "g_ir_scanner.found() and not meson.is_cross_build()" "g_ir_scanner.found()"
+  '' + lib.optionalString (!stdenv.buildPlatform.canExecute stdenv.hostPlatform) ''
+    substituteInPlace meson.build \
+      --replace-fail " and not meson.is_cross_build()" ""
+    substituteInPlace data/meson.build \
+      --replace-fail "files('Locations.xml')" "files('${buildPackages.libgweather}/lib/libgweather-4/Locations.bin')" \
+      --replace-fail "gen_locations_variant" "'cp'"
+
+    substituteInPlace libgweather/meson.build \
+      --replace-fail "dependency('vapigen'" "dependency('vapigen', native: true"
   '';
 
   postFixup = ''
