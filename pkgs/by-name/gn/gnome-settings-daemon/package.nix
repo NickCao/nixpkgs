@@ -37,6 +37,7 @@
   tzdata,
   gcr_4,
   gnome-session-ctl,
+  buildPackages,
   withSystemd ? lib.meta.availableOn stdenv.hostPlatform systemd,
 }:
 
@@ -59,6 +60,13 @@ stdenv.mkDerivation (finalAttrs: {
     })
   ];
 
+  strictDeps = true;
+
+  depsBuildBuild = [
+    buildPackages.stdenv.cc
+    pkg-config
+  ];
+
   nativeBuildInputs = [
     meson
     ninja
@@ -70,6 +78,7 @@ stdenv.mkDerivation (finalAttrs: {
     docbook_xsl
     wrapGAppsHook3
     python3
+    glib
   ];
 
   buildInputs =
