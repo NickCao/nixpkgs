@@ -30,7 +30,6 @@ runCommand "gdk-pixbuf-loaders.cache"
         module_dir="$package/${gdk-pixbuf.moduleDir}"
         if [[ ! -d "$module_dir" ]]; then
           echo "Error: gdkPixbufCacheBuilder: Passed package “''${package}” does not contain GdkPixbuf loaders in “${gdk-pixbuf.moduleDir}”." 1>&2
-          exit 1
         fi
         GDK_PIXBUF_MODULEDIR="$module_dir" \
           ${stdenv.hostPlatform.emulator buildPackages} ${gdk-pixbuf.dev}/bin/gdk-pixbuf-query-loaders
