@@ -42,7 +42,7 @@ let
 
 in
 
-runCommand "gnome-gsettings-overrides" { preferLocalBuild = true; } ''
+runCommand "gnome-gsettings-overrides" { preferLocalBuild = true; nativeBuildInputs = [ glib ]; } ''
   data_dir="$out/share/gsettings-schemas/nixos-gsettings-overrides"
   schema_dir="$data_dir/glib-2.0/schemas"
   mkdir -p "$schema_dir"
@@ -57,5 +57,5 @@ runCommand "gnome-gsettings-overrides" { preferLocalBuild = true; } ''
   ${gsettingsOverrides}
   EOF
 
-  ${glib.dev}/bin/glib-compile-schemas --strict "$schema_dir"
+  glib-compile-schemas --strict "$schema_dir"
 ''
