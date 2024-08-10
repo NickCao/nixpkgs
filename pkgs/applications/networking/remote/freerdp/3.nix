@@ -192,7 +192,9 @@ stdenv.mkDerivation (finalAttrs: {
     WITH_WEBVIEW = false; # avoid introducing webkit2gtk-4.0
     WITH_VAAPI = false; # false is recommended by upstream
     WITH_X11 = true;
-  };
+  } ++ lib.optionals (!stdenv.buildPlatform.canExecute stdenv.hostPlatform) [
+    "-DSDL_USE_COMPILED_RESOURCES=OFF"
+  ];
 
   env.NIX_CFLAGS_COMPILE = toString (lib.optionals stdenv.hostPlatform.isDarwin [
     "-DTARGET_OS_IPHONE=0"
