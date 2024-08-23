@@ -5673,9 +5673,9 @@ with pkgs;
         name = "mesonEmulatorHook";
         substitutions = {
           crossFile = writeText "cross-file.conf" ''
-              [binaries]
-              exe_wrapper = ${lib.escapeShellArg (stdenv.targetPlatform.emulator pkgs)}
-            '';
+            [binaries]
+            exe_wrapper = '${lib.escapeShellArg (stdenv.targetPlatform.emulator pkgs)}'
+          '';
         };
       }
       # The throw is moved into the `makeSetupHook` derivation, so that its
