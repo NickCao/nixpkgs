@@ -8,6 +8,7 @@
 , alsa-lib
 , faac
 , faad2
+, fdk_aac
 , ffmpeg
 , fuse3
 , glib
@@ -63,9 +64,6 @@
 , buildPackages
 }:
 
-let
-  cmFlag = flag: if flag then "ON" else "OFF";
-in
 stdenv.mkDerivation (finalAttrs: {
   pname = "freerdp";
   version = "3.7.0";
@@ -107,6 +105,7 @@ stdenv.mkDerivation (finalAttrs: {
     cjson
     cups
     faad2
+    fdk_aac
     ffmpeg
     glib
     icu
@@ -158,15 +157,16 @@ stdenv.mkDerivation (finalAttrs: {
   # https://github.com/FreeRDP/FreeRDP/issues/8526#issuecomment-1357134746
   cmakeFlags = [
     "-Wno-dev"
-    "-DCMAKE_INSTALL_LIBDIR=lib"
-    "-DDOCBOOKXSL_DIR=${docbook-xsl-nons}/xml/xsl/docbook"
-    "-DWAYLAND_SCANNER=${buildPackages.wayland-scanner}/bin/wayland-scanner"
-  ] ++ lib.mapAttrsToList (k: v: "-D${k}=${cmFlag v}") {
+    (lib.cmakeFeature "CMAKE_INSTALL_LIBDIR" "lib")
+    (lib.cmakeFeature "DOCBOOKXSL_DIR" "${docbook-xsl-nons}/xml/xsl/docbook")
+    (lib.cmakeFeature "WAYLAND_SCANNER" "${buildPackages.wayland-scanner}/bin/wayland-scanner")
+  ] ++ lib.mapAttrsToList lib.cmakeBool {
     BUILD_TESTING = false; # false is recommended by upstream
     WITH_CAIRO = (cairo != null);
     WITH_CUPS = (cups != null);
     WITH_FAAC = (withUnfree && faac != null);
     WITH_FAAD2 = (faad2 != null);
+    WITH_FDK_AAC = (fdk_aac != null);
     WITH_FUSE = (stdenv.isLinux && fuse3 != null);
     WITH_JPEG = (libjpeg_turbo != null);
     WITH_KRB5 = (libkrb5 != null);
