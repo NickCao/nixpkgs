@@ -1,24 +1,27 @@
-{ stdenv
-, lib
-, fetchFromGitLab
-, meson
-, ninja
-, pkg-config
-, desktop-file-utils
-, gettext
-, itstool
-, python3
-, wrapGAppsHook3
-, gtk3
-, glib
-, libsoup
-, gnome-online-accounts
-, librest
-, json-glib
-, gnome-autoar
-, gspell
-, libcanberra
-, nix-update-script
+{
+  stdenv,
+  lib,
+  fetchFromGitLab,
+  meson,
+  mesonEmulatorHook,
+  ninja,
+  pkg-config,
+  desktop-file-utils,
+  gettext,
+  itstool,
+  libxml2,
+  python3,
+  wrapGAppsHook3,
+  gtk3,
+  glib,
+  libsoup,
+  gnome-online-accounts,
+  librest,
+  json-glib,
+  gnome-autoar,
+  gspell,
+  libcanberra,
+  nix-update-script,
 }:
 
 stdenv.mkDerivation rec {
@@ -34,16 +37,29 @@ stdenv.mkDerivation rec {
     sha256 = "GyFOwEYmipQdFLtTXn7+NvhDTzxBlOAghr3cZT4QpQw=";
   };
 
-  nativeBuildInputs = [
-    meson
-    ninja
+  strictDeps = true;
+
+  depsBuildBuild = [
     pkg-config
-    desktop-file-utils
-    gettext
-    itstool
-    python3
-    wrapGAppsHook3
   ];
+
+  nativeBuildInputs =
+    [
+      meson
+      ninja
+      pkg-config
+      glib
+      desktop-file-utils
+      gettext
+      itstool
+      libxml2 # xmllint
+      python3
+      gtk3 # gtk-update-icon-cache
+      wrapGAppsHook3
+    ]
+    ++ lib.optionals (!stdenv.buildPlatform.canExecute stdenv.hostPlatform) [
+      mesonEmulatorHook
+    ];
 
   buildInputs = [
     gtk3
@@ -58,9 +74,7 @@ stdenv.mkDerivation rec {
   ];
 
   postPatch = ''
-    chmod +x src/list_to_c.py
-    patchShebangs src/list_to_c.py
-    patchShebangs meson_post_install.py
+    patchShebangs --build src/list_to_c.py meson_post_install.py
   '';
 
   passthru = {
