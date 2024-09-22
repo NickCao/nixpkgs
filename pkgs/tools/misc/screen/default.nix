@@ -4,35 +4,33 @@
 , autoreconfHook
 , ncurses
 , libxcrypt
-, utmp
 , pam ? null
 }:
 
 stdenv.mkDerivation rec {
   pname = "screen";
-  version = "4.9.1";
+  version = "5.0.0";
 
   src = fetchurl {
     url = "mirror://gnu/screen/screen-${version}.tar.gz";
-    hash = "sha256-Js7z48QlccDUhK1vrxEMXBUJH7+HKwb6eqR2bHQFrGk=";
+    hash = "sha256-8Eo50AoOXHyGpVM4gIkDCCrV301z3xov00JZdq7ZSXE=";
   };
+
+  __structuredAttrs = true;
 
   configureFlags = [
     "--enable-telnet"
-    "--enable-pam"
-    "--with-sys-screenrc=/etc/screenrc"
-    "--enable-colors256"
-    "--enable-rxvt_osc"
+    "CFLAGS=-O2 -g -D_GNU_SOURCE=1 -Wno-error=int-conversion -Wno-error=incompatible-pointer-types"
   ];
 
   nativeBuildInputs = [
     autoreconfHook
   ];
+
   buildInputs = [
     ncurses
     libxcrypt
-  ] ++ lib.optional stdenv.hostPlatform.isLinux pam
-    ++ lib.optional stdenv.hostPlatform.isDarwin utmp;
+  ] ++ lib.optional stdenv.hostPlatform.isLinux pam;
 
   doCheck = true;
 
