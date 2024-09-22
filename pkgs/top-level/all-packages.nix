@@ -12051,9 +12051,7 @@ with pkgs;
 
   scream = callPackage ../applications/audio/scream { };
 
-  screen = callPackage ../tools/misc/screen {
-    inherit (darwin.apple_sdk.libs) utmp;
-  };
+  screen = callPackage ../tools/misc/screen { };
 
   screen-message = callPackage ../tools/X11/screen-message { };
 
