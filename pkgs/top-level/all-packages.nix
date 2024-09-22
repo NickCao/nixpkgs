@@ -4976,9 +4976,7 @@ with pkgs;
 
   sasview = libsForQt5.callPackage ../applications/science/misc/sasview { };
 
-  screen = callPackage ../tools/misc/screen {
-    inherit (darwin.apple_sdk.libs) utmp;
-  };
+  screen = callPackage ../tools/misc/screen { };
 
   scfbuild = python3.pkgs.callPackage ../tools/misc/scfbuild { };
 
