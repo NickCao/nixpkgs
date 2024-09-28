@@ -132,7 +132,7 @@ let
     # When we override the interpreter we also need to override the spliced versions of the interpreter
     # bluez is excluded manually to break an infinite recursion.
     inputs' = lib.filterAttrs (n: v: n != "bluez" && n != "passthruFun" && ! lib.isDerivation v) inputs;
-    override = attr: let python = attr.override (inputs' // { self = python; }); in python;
+    override = attr: attr;
   in passthruFun rec {
     inherit self sourceVersion packageOverrides;
     implementation = "cpython";
