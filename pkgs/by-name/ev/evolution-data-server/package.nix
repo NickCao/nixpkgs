@@ -180,5 +180,6 @@ stdenv.mkDerivation rec {
     license = licenses.lgpl2Plus;
     maintainers = teams.gnome.members;
     platforms = platforms.unix;
+    broken = !stdenv.buildPlatform.canExecute stdenv.hostPlatform;
   };
 }
