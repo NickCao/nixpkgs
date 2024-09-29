@@ -14,12 +14,12 @@
 , static ? stdenv.hostPlatform.isStatic
 }:
 
-stdenv.mkDerivation rec {
+stdenv.mkDerivation (finalAttrs: {
   pname = "thrift";
   version = "0.18.1";
 
   src = fetchurl {
-    url = "https://archive.apache.org/dist/thrift/${version}/${pname}-${version}.tar.gz";
+    url = "https://archive.apache.org/dist/thrift/${finalAttrs.version}/${finalAttrs.pname}-${finalAttrs.version}.tar.gz";
     hash = "sha256-BMbxDl14jKeOE+4u8NIVLHsHDAr1VIPWuULinP8pZyY=";
   };
 
@@ -89,15 +89,16 @@ stdenv.mkDerivation rec {
   ];
 
   cmakeFlags = [
-    "-DBUILD_JAVASCRIPT:BOOL=OFF"
-    "-DBUILD_NODEJS:BOOL=OFF"
+    (lib.cmakeBool "BUILD_JAVASCRIPT" false)
+    (lib.cmakeBool "BUILD_NODEJS" false)
 
+    (lib.cmakeBool "BUILD_TUTORIALS" (stdenv.buildPlatform.canExecute stdenv.hostPlatform))
     # FIXME: Fails to link in static mode with undefined reference to
     # `boost::unit_test::unit_test_main(bool (*)(), int, char**)'
-    "-DBUILD_TESTING:BOOL=${if static then "OFF" else "ON"}"
+    (lib.cmakeBool "BUILD_TESTING" finalAttrs.finalPackage.doCheck)
   ] ++ lib.optionals static [
-    "-DWITH_STATIC_LIB:BOOL=ON"
-    "-DOPENSSL_USE_STATIC_LIBS=ON"
+    (lib.cmakeBool "WITH_STATIC_LIB" true)
+    (lib.cmakeBool "OPENSSL_USE_STATIC_LIBS" true)
   ];
 
   disabledTests = [
@@ -144,4 +145,4 @@ stdenv.mkDerivation rec {
     platforms = platforms.linux ++ platforms.darwin;
     maintainers = with maintainers; [ bjornfor ];
   };
-}
+})
