@@ -2,6 +2,7 @@
   lib,
   stdenv,
   fetchFromGitHub,
+  fetchpatch2,
   autoreconfHook,
   pkg-config,
   bison,
@@ -126,6 +127,10 @@ stdenv.mkDerivation rec {
     ./ext_auth-path.patch
     ./firewall_defaults.patch
     ./updown-path.patch
+    (fetchpatch2 {
+      url = "https://github.com/strongswan/strongswan/commit/80128c395f04c955e78440c3e22caf1bdf209887.patch";
+      hash = "sha256-LWkIS8A9i9sF/Zbt4NG234tghiJIfUluAGjNzMckOb8=";
+    })
   ];
 
   nativeBuildInputs = [
