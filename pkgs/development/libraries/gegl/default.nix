@@ -51,6 +51,10 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-WIdXY3Hr8dnpB5fRDkuafxZYIo1IJ1g+eeHbPZRQXGw=";
   };
 
+  depsBuildBuild = [
+    pkg-config
+  ];
+
   nativeBuildInputs = [
     pkg-config
     gettext
@@ -112,6 +116,9 @@ stdenv.mkDerivation (finalAttrs: {
   postPatch = ''
     chmod +x tests/opencl/opencl_test.sh
     patchShebangs tests/ff-load-save/tests_ff_load_save.sh tests/opencl/opencl_test.sh tools/xml_insert.sh
+
+    substituteInPlace meson.build \
+      --replace-fail "dependency('vapigen'," "dependency('vapigen', native: true,"
   '';
 
   postFixup = ''
