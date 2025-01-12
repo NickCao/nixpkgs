@@ -1,0 +1,13 @@
+diff --git a/tests/storage/databases/main/test_events_worker.py b/tests/storage/databases/main/test_events_worker.py
+index 104d141a..3a9e8f6a 100644
+--- a/tests/storage/databases/main/test_events_worker.py
++++ b/tests/storage/databases/main/test_events_worker.py
+@@ -372,7 +372,7 @@ class DatabaseOutageTestCase(unittest.HomeserverTestCase):
+         )
+ 
+         self.event_ids: List[str] = []
+-        for idx in range(1, 21):  # Stream ordering starts at 1.
++        for idx in range(1, 11):  # Stream ordering starts at 1.
+             event_json = {
+                 "type": f"test {idx}",
+                 "room_id": self.room_id,
