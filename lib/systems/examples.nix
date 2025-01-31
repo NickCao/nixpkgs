@@ -360,6 +360,11 @@ rec {
     useLLVM = true;
   };
 
+  xtensa-lx106-embedded = {
+    config = "xtensa-lx106-none-elf";
+    libc = "newlib";
+  };
+
   #
   # WASM
   #

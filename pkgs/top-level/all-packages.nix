@@ -18231,6 +18231,10 @@ with pkgs;
     stdenv = stdenvNoLibc;
   };
 
+  lx106-hal = callPackage ../by-name/lx/lx106-hal/package.nix {
+    stdenv = stdenvNoLibc;
+  };
+
   newlib-nano = callPackage ../development/misc/newlib {
     stdenv = stdenvNoLibc;
     nanoizeNewlib = true;

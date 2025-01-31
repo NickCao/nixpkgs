@@ -170,6 +170,9 @@ rec {
     loongarch64 = { bits = 64; significantByte = littleEndian; family = "loongarch"; };
 
     javascript = { bits = 32; significantByte = littleEndian; family = "javascript"; };
+
+    xtensa = { bits = 32; significantByte = bigEndian; family = "xtensa"; };
+    xtensale = { bits = 32; significantByte = littleEndian; family = "xtensa"; };
   };
 
   # GNU build systems assume that older NetBSD architectures are using a.out.
@@ -269,6 +272,8 @@ rec {
 
     none = {};
     unknown = {};
+
+    lx106 = {};
   };
 
   ################################################################################

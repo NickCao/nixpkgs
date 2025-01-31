@@ -5,6 +5,7 @@
   lib,
   fetchpatch,
   texinfo,
+  lx106-hal,
   # "newlib-nano" is what the official ARM embedded toolchain calls this build
   # configuration that prioritizes low space usage. We include it as a preset
   # for embedded projects striving for a similar configuration.
@@ -32,6 +33,10 @@ stdenv.mkDerivation (finalAttrs: {
   depsBuildBuild = [
     buildPackages.stdenv.cc
     texinfo # for makeinfo
+  ];
+
+  buildInputs = [
+    lx106-hal
   ];
 
   # newlib expects CC to build for build platform, not host platform
