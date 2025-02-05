@@ -171,8 +171,7 @@ rec {
 
     javascript = { bits = 32; significantByte = littleEndian; family = "javascript"; };
 
-    xtensa = { bits = 32; significantByte = bigEndian; family = "xtensa"; };
-    xtensale = { bits = 32; significantByte = littleEndian; family = "xtensa"; };
+    xtensa = { bits = 32; significantByte = littleEndian; family = "xtensa"; };
   };
 
   # GNU build systems assume that older NetBSD architectures are using a.out.
