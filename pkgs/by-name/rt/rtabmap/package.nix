@@ -2,6 +2,7 @@
   lib,
   stdenv,
   fetchFromGitHub,
+  fetchpatch2,
 
   # nativeBuildInputs
   cmake,
@@ -41,6 +42,15 @@ stdenv.mkDerivation (finalAttrs: {
     tag = finalAttrs.version;
     hash = "sha256-y/p1uFSxVQNXO383DLGCg4eWW7iu1esqpWlyPMF3huk=";
   };
+
+  patches = [
+    # [BUILD] SensorCaptureThread.cpp <pcl/io/io.h> deprecated on newer PCL versions
+    # https://github.com/introlab/rtabmap/issues/1388
+    (fetchpatch2 {
+      url = "https://github.com/introlab/rtabmap/commit/cbd3995b600fc2acc4cb57b81f132288a6c91188.patch";
+      hash = "sha256-G66SMHGvrHNqST9nusC1I7HBzzCRVWcTL3/IgfKM1cM=";
+    })
+  ];
 
   nativeBuildInputs = [
     cmake
@@ -90,7 +100,5 @@ stdenv.mkDerivation (finalAttrs: {
     license = lib.licenses.bsd3;
     maintainers = with lib.maintainers; [ marius851000 ];
     platforms = with lib.platforms; linux;
-    # pcl/io/io.h: No such file or directory
-    broken = true;
   };
 })
