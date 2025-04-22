@@ -11,27 +11,28 @@ let
     self = python;
     packageOverrides = self: super: {
       tulir-telethon = self.telethon.overridePythonAttrs (oldAttrs: rec {
-        version = "1.37.0a1";
+        version = "1.99.0a4";
         pname = "tulir-telethon";
         src = fetchPypi {
-          inherit pname version;
-          hash = "sha256-FckMHqGaBsqvFbrEnDWqJAQG8j/euY2NooesnxV6Kcc=";
+          pname = "tulir_telethon";
+          inherit version;
+          hash = "sha256-9OOgLE6FN5WJzscsq7b15IDeGfId+krc0PUequx5GY0=";
         };
         doCheck = false;
       });
     };
   };
 in
-python.pkgs.buildPythonPackage rec {
+python.pkgs.buildPythonPackage {
   pname = "mautrix-telegram";
-  version = "0.15.2";
+  version = "0.15.2-unstable-2025-04-19";
   disabled = python.pythonOlder "3.8";
 
   src = fetchFromGitHub {
     owner = "mautrix";
     repo = "telegram";
-    tag = "v${version}";
-    hash = "sha256-uR0vhp7ONyjwMKbgM1iObpFRoQzyQzJLbw4i9P58jTs=";
+    rev = "530bd9e52e15c0fe4237756cd7880f4fafa8ddf1";
+    hash = "sha256-LBThtncYAT83JcryIaWhjak1HZf7VGnoI/W9JIYTcRQ=";
   };
 
   format = "setuptools";
