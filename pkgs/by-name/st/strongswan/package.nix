@@ -120,13 +120,13 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "strongswan";
-  version = "6.0.1"; # Make sure to also update <nixpkgs/nixos/modules/services/networking/strongswan-swanctl/swanctl-params.nix> when upgrading!
+  version = "6.0.2"; # Make sure to also update <nixpkgs/nixos/modules/services/networking/strongswan-swanctl/swanctl-params.nix> when upgrading!
 
   src = fetchFromGitHub {
     owner = "strongswan";
     repo = "strongswan";
     tag = version;
-    hash = "sha256-4bYi31mLRYcQpcQrV+t71H1qI7JVWLdAjAe9RM2Xkac=";
+    hash = "sha256-wjz41gt+Xu4XJkEXRRVl3b3ryEoEtijeqmfVFoRjnA4=";
   };
 
   patches = [
