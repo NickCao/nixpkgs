@@ -13,6 +13,7 @@
   libtool,
   libusb1,
   qtbase,
+  qtwayland,
   qtmultimedia,
   qtserialport,
   qttools,
@@ -49,6 +50,7 @@ stdenv.mkDerivation rec {
     hamlib_4
     libusb1
     qtbase
+    qtwayland
     qtmultimedia
     qtserialport
     boost
