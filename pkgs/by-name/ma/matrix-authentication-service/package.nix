@@ -2,6 +2,7 @@
   lib,
   rustPlatform,
   fetchFromGitHub,
+  fetchpatch,
   fetchNpmDeps,
   npmHooks,
   nodejs,
@@ -28,6 +29,19 @@ rustPlatform.buildRustPackage (finalAttrs: {
   };
 
   cargoHash = "sha256-PQ/Op567xD1u8J01r5quzDsDjGw7kxbGL4oaM4b6Obc=";
+
+  patches = [
+    # Add upstream_oauth2.providers.[].client_secret_file config option
+    (fetchpatch {
+      url = "https://patch-diff.githubusercontent.com/raw/element-hq/matrix-authentication-service/pull/4882.patch";
+      hash = "sha256-OKwl2DPCt5HWkhGeuooLONt8QlERzMmFEu3cDaQhocY=";
+    })
+    # Use the stable MAS integration of Synapse in the documentation and in mas-cli doctor
+    (fetchpatch {
+      url = "https://patch-diff.githubusercontent.com/raw/element-hq/matrix-authentication-service/pull/4902.patch";
+      hash = "sha256-q5FeBbINfFO+scYR91pNrCZauo7ay4+KPGag5PsYi40=";
+    })
+  ];
 
   npmDeps = fetchNpmDeps {
     name = "${finalAttrs.pname}-${finalAttrs.version}-npm-deps";
