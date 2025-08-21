@@ -2,6 +2,7 @@
   lib,
   rustPlatform,
   fetchFromGitHub,
+  fetchpatch,
   fetchNpmDeps,
   npmHooks,
   nodejs,
@@ -28,6 +29,14 @@ rustPlatform.buildRustPackage (finalAttrs: {
   };
 
   cargoHash = "sha256-PNPZFxCsBXwiQ2leDyHWOFtEQJW0DxU6pTEs04sdM+M=";
+
+  patches = [
+    # Add upstream_oauth2.providers.[].client_secret_file config option
+    (fetchpatch {
+      url = "https://patch-diff.githubusercontent.com/raw/element-hq/matrix-authentication-service/pull/4882.patch";
+      hash = "sha256-f4VN0gS1G5ahMwa8bMBTrOTtHPi7Ic5476zZgdCsx8A=";
+    })
+  ];
 
   npmDeps = fetchNpmDeps {
     name = "${finalAttrs.pname}-${finalAttrs.version}-npm-deps";
