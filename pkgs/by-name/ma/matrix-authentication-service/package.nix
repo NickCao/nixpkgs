@@ -19,16 +19,16 @@
 
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "matrix-authentication-service";
-  version = "1.1.0";
+  version = "1.2.0-rc.0";
 
   src = fetchFromGitHub {
     owner = "element-hq";
     repo = "matrix-authentication-service";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-lvBlwp2a2JPGgaCKt5HOxm9xoy+HyZeJGw6G5NiLgAw=";
+    hash = "sha256-qOmNlV3GZDxfJExAEq8wusf+SNdOvdhnGP450mrQERE=";
   };
 
-  cargoHash = "sha256-PQ/Op567xD1u8J01r5quzDsDjGw7kxbGL4oaM4b6Obc=";
+  cargoHash = "sha256-W6SeNowTvNfa+ACJUs6xrR/65zPJ/73FRZoTiRmlTBE=";
 
   patches = [
     # Add upstream_oauth2.providers.[].client_secret_file config option
@@ -41,7 +41,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
   npmDeps = fetchNpmDeps {
     name = "${finalAttrs.pname}-${finalAttrs.version}-npm-deps";
     src = "${finalAttrs.src}/${finalAttrs.npmRoot}";
-    hash = "sha256-iyLUKcxpq5G7P2TlQ/GmJdZtEbeX+/NkhdEQOi44s5I=";
+    hash = "sha256-vl7enIRs26HOWr/XPCRw8/f26NwqxgObRdKqEKcYDe8=";
   };
 
   npmRoot = "frontend";
