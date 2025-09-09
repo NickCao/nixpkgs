@@ -19,16 +19,16 @@
 
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "matrix-authentication-service";
-  version = "1.2.0-rc.0";
+  version = "1.2.0";
 
   src = fetchFromGitHub {
     owner = "element-hq";
     repo = "matrix-authentication-service";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-qOmNlV3GZDxfJExAEq8wusf+SNdOvdhnGP450mrQERE=";
+    hash = "sha256-Du9gEQDRNcFJt15Vml4mltXliHTdfUTNvGETTwoSFS4=";
   };
 
-  cargoHash = "sha256-W6SeNowTvNfa+ACJUs6xrR/65zPJ/73FRZoTiRmlTBE=";
+  cargoHash = "sha256-KHoC1kX4/PbSEsHLwiwF/YcbJ97dsPOA5rz3b2nNV04=";
 
   patches = [
     # Add upstream_oauth2.providers.[].client_secret_file config option
