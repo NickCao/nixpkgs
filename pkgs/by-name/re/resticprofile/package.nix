@@ -11,17 +11,17 @@
 
 buildGoModule rec {
   pname = "resticprofile";
-  version = "0.31.0";
+  version = "0.32.0";
 
   src = fetchFromGitHub {
     owner = "creativeprojects";
     repo = "resticprofile";
     tag = "v${version}";
-    hash = "sha256-ezelvyroQG1EW3SU63OVHJ/T4qjN5DRllvPIXnei1Z4=";
+    hash = "sha256-fmYsoGYppNgbtoX18aF5UHBG9ieYorBJ9JZkwrR+UBI=";
   };
 
   postPatch = ''
-    substituteInPlace schedule_jobs.go \
+    substituteInPlace util/executable.go \
         --replace-fail "os.Executable()" "\"$out/bin/resticprofile\", nil"
 
     substituteInPlace shell/command.go \
@@ -32,7 +32,7 @@ buildGoModule rec {
 
   '';
 
-  vendorHash = "sha256-M9S6F/Csz7HnOq8PSWjpENKm1704kVx9zDts1ieraTE=";
+  vendorHash = "sha256-/GVWjOvkYe7xMRjANKIKV6FSU0F5VY1ZP/ppgAJyhvw=";
 
   ldflags = [
     "-X main.version=${version}"
