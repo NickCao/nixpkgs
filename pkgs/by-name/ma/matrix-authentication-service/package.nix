@@ -2,7 +2,6 @@
   lib,
   rustPlatform,
   fetchFromGitHub,
-  fetchpatch,
   fetchNpmDeps,
   npmHooks,
   nodejs,
@@ -19,29 +18,21 @@
 
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "matrix-authentication-service";
-  version = "1.6.0";
+  version = "1.7.0-rc.0";
 
   src = fetchFromGitHub {
     owner = "element-hq";
     repo = "matrix-authentication-service";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-JSuhI38fLi9z7dMRL04eQ1UdMMe8S/F3qXrJT1DwnS0=";
+    hash = "sha256-hfjxdQsykk3NLeJTr/kEcuTdtgKVeArcvT/rVstRrek=";
   };
 
-  cargoHash = "sha256-PNPZFxCsBXwiQ2leDyHWOFtEQJW0DxU6pTEs04sdM+M=";
-
-  patches = [
-    # Add upstream_oauth2.providers.[].client_secret_file config option
-    (fetchpatch {
-      url = "https://patch-diff.githubusercontent.com/raw/element-hq/matrix-authentication-service/pull/4882.patch";
-      hash = "sha256-f4VN0gS1G5ahMwa8bMBTrOTtHPi7Ic5476zZgdCsx8A=";
-    })
-  ];
+  cargoHash = "sha256-oXohoyIQjJdMD37evIw/GIXGtW2QzqXCLujT8kshsmg=";
 
   npmDeps = fetchNpmDeps {
     name = "${finalAttrs.pname}-${finalAttrs.version}-npm-deps";
     src = "${finalAttrs.src}/${finalAttrs.npmRoot}";
-    hash = "sha256-0YWguliIJjYh1IUUIX4/CHDYwvUk/M2Hz15tL558tws=";
+    hash = "sha256-HVT1x378CRvyW1m9peM3Q0xHLRKocmtDUPkvnV5XQeQ=";
   };
 
   npmRoot = "frontend";
