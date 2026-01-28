@@ -1,0 +1,128 @@
+diff --git a/synapse/media/media_repository.py b/synapse/media/media_repository.py
+index 3344e4c7..d3eab416 100644
+--- a/synapse/media/media_repository.py
++++ b/synapse/media/media_repository.py
+@@ -343,7 +343,7 @@ class MediaRepository:
+         file_info = FileInfo(server_name=None, file_id=media_id)
+         sha256reader = SHA256TransparentIOReader(content)
+         # This implements all of IO as it has a passthrough
+-        fname = await self.media_storage.store_file(sha256reader.wrap(), file_info)
++        fname, _ = await self.media_storage.store_file(sha256reader.wrap(), file_info)
+         sha256 = sha256reader.hexdigest()
+         should_quarantine = await self.store.get_is_hash_quarantined(sha256)
+ 
+@@ -1203,7 +1203,7 @@ class MediaRepository:
+                     ),
+                 )
+ 
+-                output_path = await self.media_storage.store_file(
++                output_path, t_len = await self.media_storage.store_file(
+                     t_byte_source, file_info
+                 )
+             finally:
+@@ -1211,8 +1211,6 @@ class MediaRepository:
+ 
+             logger.info("Stored thumbnail in file %r", output_path)
+ 
+-            t_len = os.path.getsize(output_path)
+-
+             await self.store.store_local_thumbnail(
+                 media_id,
+                 t_width,
+@@ -1278,7 +1276,7 @@ class MediaRepository:
+                     ),
+                 )
+ 
+-                output_path = await self.media_storage.store_file(
++                output_path, t_len = await self.media_storage.store_file(
+                     t_byte_source, file_info
+                 )
+             finally:
+@@ -1286,8 +1284,6 @@ class MediaRepository:
+ 
+             logger.info("Stored thumbnail in file %r", output_path)
+ 
+-            t_len = os.path.getsize(output_path)
+-
+             await self.store.store_remote_media_thumbnail(
+                 server_name,
+                 media_id,
+diff --git a/synapse/media/media_storage.py b/synapse/media/media_storage.py
+index 4c942f07..d735a500 100644
+--- a/synapse/media/media_storage.py
++++ b/synapse/media/media_storage.py
+@@ -179,7 +179,7 @@ class MediaStorage:
+         self.clock = hs.get_clock()
+ 
+     @trace_with_opname("MediaStorage.store_file")
+-    async def store_file(self, source: IO, file_info: FileInfo) -> str:
++    async def store_file(self, source: IO, file_info: FileInfo) -> (str, int):
+         """Write `source` to the on disk media store, and also any other
+         configured storage providers
+ 
+@@ -193,8 +193,9 @@ class MediaStorage:
+         async with self.store_into_file(file_info) as (f, fname):
+             # Write to the main media repository
+             await self.write_to_file(source, f)
++            fsize = os.path.getsize(fname)
+ 
+-        return fname
++        return fname, fsize
+ 
+     @trace_with_opname("MediaStorage.write_to_file")
+     async def write_to_file(self, source: IO, output: IO) -> None:
+@@ -261,7 +262,7 @@ class MediaStorage:
+ 
+                 for provider in self.storage_providers:
+                     with start_active_span(str(provider)):
+-                        await provider.store_file(path, file_info)
++                        await provider.store_file(path, file_info, media_filepath)
+ 
+                 # If using a temp file, delete it after uploading to storage providers
+                 if is_temp_file:
+diff --git a/synapse/media/storage_provider.py b/synapse/media/storage_provider.py
+index c5faa25b..c9f561db 100644
+--- a/synapse/media/storage_provider.py
++++ b/synapse/media/storage_provider.py
+@@ -44,13 +44,14 @@ class StorageProvider(metaclass=abc.ABCMeta):
+     """
+ 
+     @abc.abstractmethod
+-    async def store_file(self, path: str, file_info: FileInfo) -> None:
++    async def store_file(self, path: str, file_info: FileInfo, file_path: os.PathLike) -> None:
+         """Store the file described by file_info. The actual contents can be
+-        retrieved by reading the file in file_info.upload_path.
++        retrieved by reading the file in file_path.
+ 
+         Args:
+             path: Relative path of file in local cache
+             file_info: The metadata of the file.
++            file_path: The path of the file
+         """
+ 
+     @abc.abstractmethod
+@@ -94,7 +95,7 @@ class StorageProviderWrapper(StorageProvider):
+         return "StorageProviderWrapper[%s]" % (self.backend,)
+ 
+     @trace_with_opname("StorageProviderWrapper.store_file")
+-    async def store_file(self, path: str, file_info: FileInfo) -> None:
++    async def store_file(self, path: str, file_info: FileInfo, file_path: os.PathLike) -> None:
+         if not file_info.server_name and not self.store_local:
+             return None
+ 
+@@ -109,13 +110,13 @@ class StorageProviderWrapper(StorageProvider):
+         if self.store_synchronous:
+             # store_file is supposed to return an Awaitable, but guard
+             # against improper implementations.
+-            await maybe_awaitable(self.backend.store_file(path, file_info))  # type: ignore
++            await maybe_awaitable(self.backend.store_file(path, file_info, file_path))  # type: ignore
+         else:
+             # TODO: Handle errors.
+             async def store() -> None:
+                 try:
+                     return await maybe_awaitable(
+-                        self.backend.store_file(path, file_info)
++                        self.backend.store_file(path, file_info, file_path)
+                     )
+                 except Exception:
+                     logger.exception("Error storing file")
