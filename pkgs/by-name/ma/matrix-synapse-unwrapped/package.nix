@@ -24,6 +24,10 @@ python3Packages.buildPythonApplication rec {
     hash = "sha256-gtTgILfGLYL0ASNz6m8MJhAidQ7kTGqdiMNP6R8bH5Q=";
   };
 
+  patches = [
+    ./storage_provider.patch
+  ];
+
   cargoDeps = rustPlatform.fetchCargoVendor {
     inherit pname version src;
     hash = "sha256-PHaFsLVUpeMSgHMg05blJUNgycDLbZUiZkWSPjDT1CM=";
