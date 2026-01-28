@@ -22,6 +22,10 @@ buildPythonPackage rec {
     hash = "sha256-vRDjN9BDp7Rta/F91OVEH8FWyiwxR67PQSqBCs3bDkM=";
   };
 
+  patches = [
+    ./s3-storage-provider.patch
+  ];
+
   postPatch = ''
     substituteInPlace setup.py \
       --replace "humanize>=0.5.1,<0.6" "humanize>=0.5.1"
