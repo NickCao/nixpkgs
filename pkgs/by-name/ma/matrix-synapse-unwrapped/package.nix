@@ -28,6 +28,7 @@ python3Packages.buildPythonApplication rec {
     # fix compatibility with authlib authlib 1.7+
     # https://github.com/element-hq/synapse/pull/20330
     ./authlib.patch
+    ./storage_provider.patch
   ];
 
   cargoDeps = rustPlatform.fetchCargoVendor {
