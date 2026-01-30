@@ -21,18 +21,18 @@ assert lib.elem variant [
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "libkrunfw" + lib.optionalString (variant != null) "-${variant}";
-  version = "5.0.0";
+  version = "5.1.0";
 
   src = fetchFromGitHub {
     owner = "containers";
     repo = "libkrunfw";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-RhVSP73MZ7MiCWKAuTd/Os7i3qetmzl2WYBb6xyMd6M=";
+    hash = "sha256-x9HQP+EqCteoCq2Sl/TQcfdzQC5iuE4gaSKe7tN5dAA=";
   };
 
   kernelSrc = fetchurl {
-    url = "mirror://kernel/linux/kernel/v6.x/linux-6.12.44.tar.xz";
-    hash = "sha256-tlAhDtMCeyJJadFIqjd0Uqmq065/KFGr7dMa3+8Wva4=";
+    url = "mirror://kernel/linux/kernel/v6.x/linux-6.12.62.tar.xz";
+    hash = "sha256-E+LGhayPq13Zkt0QVzJVTa5RSu81DCqMdBjnt062LBM=";
   };
 
   postPatch = ''
