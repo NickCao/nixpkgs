@@ -43,6 +43,11 @@ stdenv.mkDerivation (finalAttrs: {
     "PREFIX=${placeholder "out"}"
   ];
 
+  outputs = [
+    "out"
+    "man"
+  ];
+
   meta = {
     homepage = "https://oldmanprogrammer.net/source.php?dir=projects/tree";
     description = "Command to produce a depth indented directory listing";
