@@ -36,7 +36,10 @@ python3.pkgs.buildPythonApplication (finalAttrs: {
 
   build-system = with python3.pkgs; [ setuptools ];
 
-  patches = [ ./0001-Re-add-entrypoint.patch ];
+  patches = [
+    ./0001-Re-add-entrypoint.patch
+    ./0001-handle-m.mentions-in-replies.patch
+  ];
 
   pythonRelaxDeps = [
     "mautrix"
