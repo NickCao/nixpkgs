@@ -7,6 +7,7 @@
   alsa-lib,
   pipewire,
   kdePackages,
+  wrapGAppsHook3,
 }:
 
 stdenv.mkDerivation (finalAttrs: {
@@ -25,6 +26,7 @@ stdenv.mkDerivation (finalAttrs: {
     cmake
     pkg-config
     kdePackages.wrapQtAppsHook
+    wrapGAppsHook3
   ];
 
   buildInputs = [
@@ -36,6 +38,12 @@ stdenv.mkDerivation (finalAttrs: {
   ];
 
   cmakeFlags = [ "-DCONFIG_WAYLAND=ON" ];
+
+  dontWrapGApps = true;
+
+  preFixup = ''
+    qtWrapperArgs+=("''${gappsWrapperArgs[@]}")
+  '';
 
   meta = {
     description = "Qt graph manager for PipeWire, similar to QjackCtl";
