@@ -200,7 +200,6 @@ in
         ProtectControlGroups = true;
 
         PrivateTmp = true;
-        WorkingDirectory = cfg.package; # necessary for the database migration scripts to be found
         StateDirectory = baseNameOf dataDir;
         UMask = "0027";
         EnvironmentFile = cfg.environmentFile;
