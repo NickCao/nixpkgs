@@ -11,7 +11,7 @@ let
   settingsFormat = pkgs.formats.json { };
   settingsFileUnsubstituted = settingsFormat.generate "mautrix-telegram-config.json" cfg.settings;
   settingsFile = "${dataDir}/config.json";
-
+  inherit (lib) mkDefault;
 in
 {
   options = {
@@ -20,76 +20,11 @@ in
 
       package = lib.mkPackageOption pkgs "mautrix-telegram" { };
 
-      settings = lib.mkOption rec {
-        apply = lib.recursiveUpdate default;
-        inherit (settingsFormat) type;
-        default = {
-          homeserver = {
-            software = "standard";
-          };
-
-          appservice = rec {
-            database = "sqlite:///${dataDir}/mautrix-telegram.db";
-            database_opts = { };
-            hostname = "0.0.0.0";
-            port = 8080;
-            address = "http://localhost:${toString port}";
-          };
-
-          bridge = {
-            permissions."*" = "relaybot";
-            relaybot.whitelist = [ ];
-            double_puppet_server_map = { };
-            login_shared_secret_map = { };
-          };
-
-          logging = {
-            version = 1;
-
-            formatters.precise.format = "[%(levelname)s@%(name)s] %(message)s";
-
-            handlers.console = {
-              class = "logging.StreamHandler";
-              formatter = "precise";
-            };
-
-            loggers = {
-              mau.level = "INFO";
-              telethon.level = "INFO";
-
-              # prevent tokens from leaking in the logs:
-              # https://github.com/tulir/mautrix-telegram/issues/351
-              aiohttp.level = "WARNING";
-            };
-
-            # log to console/systemd instead of file
-            root = {
-              level = "INFO";
-              handlers = [ "console" ];
-            };
-          };
+      settings = lib.mkOption {
+        type = lib.types.submodule {
+          freeformType = settingsFormat.type;
         };
-        example = lib.literalExpression ''
-          {
-            homeserver = {
-              address = "http://localhost:8008";
-              domain = "public-domain.tld";
-            };
-
-            appservice.public = {
-              prefix = "/public";
-              external = "https://public-appservice-address/public";
-            };
-
-            bridge.permissions = {
-              "example.com" = "full";
-              "@admin:example.com" = "admin";
-            };
-            telegram = {
-              connection.use_ipv6 = true;
-            };
-          }
-        '';
+        default = { };
         description = ''
           {file}`config.yaml` configuration as a Nix attribute set.
           Configuration options should match those described in
@@ -149,6 +84,52 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    services.mautrix-telegram.settings = {
+      homeserver = {
+        software = mkDefault "standard";
+      };
+
+      appservice = {
+        database = mkDefault "sqlite:///${dataDir}/mautrix-telegram.db";
+        database_opts = mkDefault { };
+        hostname = mkDefault "0.0.0.0";
+        port = mkDefault 8080;
+        address = mkDefault "http://localhost:${toString cfg.settings.appservice.port}";
+      };
+
+      bridge = {
+        permissions."*" = mkDefault "relaybot";
+        relaybot.whitelist = mkDefault [ ];
+        double_puppet_server_map = mkDefault { };
+        login_shared_secret_map = mkDefault { };
+      };
+
+      logging = {
+        version = mkDefault 1;
+
+        formatters.precise.format = mkDefault "[%(levelname)s@%(name)s] %(message)s";
+
+        handlers.console = {
+          class = mkDefault "logging.StreamHandler";
+          formatter = mkDefault "precise";
+        };
+
+        loggers = {
+          mau.level = mkDefault "INFO";
+          telethon.level = mkDefault "INFO";
+
+          # prevent tokens from leaking in the logs:
+          # https://github.com/tulir/mautrix-telegram/issues/351
+          aiohttp.level = mkDefault "WARNING";
+        };
+
+        # log to console/systemd instead of file
+        root = {
+          level = mkDefault "INFO";
+          handlers = mkDefault [ "console" ];
+        };
+      };
+    };
 
     users.users.mautrix-telegram = {
       isSystemUser = true;
