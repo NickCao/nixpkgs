@@ -39,8 +39,12 @@ in
         default = { };
         description = ''
           {file}`config.yaml` configuration as a Nix attribute set.
-          Configuration options should match those described in
-          [example-config.yaml](https://github.com/mautrix/telegram/blob/master/mautrix_telegram/example-config.yaml).
+
+          For the go version (`pkgs.mautrix-telegram-go`), see configuration options in
+          [example-config.yaml](https://docs.mau.fi/configs/mautrix-telegram/latest)
+
+          For the legacy python version (`pkgs.mautrix-telegram`), see configuration options in
+          [example-config.yaml](https://github.com/mautrix/telegram/blob/python-final/mautrix_telegram/example-config.yaml).
 
           Secret tokens should be specified using {option}`environmentFile`
           instead of this world-readable attribute set.
