@@ -11,6 +11,7 @@ let
   settingsFormat = pkgs.formats.json { };
   settingsFileUnsubstituted = settingsFormat.generate "mautrix-telegram-config.json" cfg.settings;
   settingsFile = "${dataDir}/config.json";
+  isPythonVersion = cfg.package ? overridePythonAttrs;
   inherit (lib) mkDefault;
 in
 {
@@ -100,32 +101,44 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    services.mautrix-telegram.settings = {
-      appservice = {
-        database = mkDefault "sqlite:///${dataDir}/mautrix-telegram.db";
-        port = mkDefault 8080;
-        address = mkDefault "http://localhost:${toString cfg.settings.appservice.port}";
-      };
-
-      bridge.permissions."*" = mkDefault "relaybot";
-
-      logging = {
-        formatters.precise.format = mkDefault "[%(levelname)s@%(name)s] %(message)s";
-        handlers.console.formatter = mkDefault "precise";
-        loggers = {
-          mau.level = mkDefault "INFO";
-          # prevent tokens from leaking in the logs:
-          # https://github.com/tulir/mautrix-telegram/issues/351
-          aiohttp.level = mkDefault "WARNING";
+    services.mautrix-telegram.settings = lib.mkMerge [
+      (lib.mkIf (!isPythonVersion) {
+        appservice = {
+          address = mkDefault "http://localhost:${toString cfg.settings.appservice.port}";
+          port = mkDefault 8080;
+        };
+        database = {
+          type = mkDefault "sqlite3-fk-wal";
+          uri = mkDefault "file:${dataDir}/mautrix-telegram.db?_txlock=immediate";
+        };
+      })
+      (lib.mkIf isPythonVersion {
+        appservice = {
+          database = mkDefault "sqlite:///${dataDir}/mautrix-telegram.db";
+          port = mkDefault 8080;
+          address = mkDefault "http://localhost:${toString cfg.settings.appservice.port}";
         };
 
-        # log to console/systemd instead of file
-        root = {
-          level = mkDefault "INFO";
-          handlers = mkDefault [ "console" ];
+        bridge.permissions."*" = mkDefault "relaybot";
+
+        logging = {
+          formatters.precise.format = mkDefault "[%(levelname)s@%(name)s] %(message)s";
+          handlers.console.formatter = mkDefault "precise";
+          loggers = {
+            mau.level = mkDefault "INFO";
+            # prevent tokens from leaking in the logs:
+            # https://github.com/tulir/mautrix-telegram/issues/351
+            aiohttp.level = mkDefault "WARNING";
+          };
+
+          # log to console/systemd instead of file
+          root = {
+            level = mkDefault "INFO";
+            handlers = mkDefault [ "console" ];
+          };
         };
-      };
-    };
+      })
+    ];
 
     users.users.mautrix-telegram = {
       isSystemUser = true;
