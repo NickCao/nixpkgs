@@ -181,10 +181,6 @@ in
         mv '${settingsFile}.tmp' '${settingsFile}'
 
         umask $old_umask
-      ''
-      + lib.optionalString (cfg.package ? alembic) ''
-        # run automatic database init and migration scripts
-        ${cfg.package.alembic}/bin/alembic -x config='${settingsFile}' upgrade head
       '';
 
       serviceConfig = {
