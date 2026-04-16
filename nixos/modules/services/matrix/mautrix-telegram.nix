@@ -18,7 +18,19 @@ in
     services.mautrix-telegram = {
       enable = lib.mkEnableOption "Mautrix-Telegram, a Matrix-Telegram hybrid puppeting/relaybot bridge";
 
-      package = lib.mkPackageOption pkgs "mautrix-telegram" { };
+      package = lib.mkPackageOption pkgs "mautrix-telegram" { } // {
+        default =
+          if lib.versionAtLeast config.system.stateVersion "26.05" then
+            pkgs.mautrix-telegram-go
+          else
+            pkgs.mautrix-telegram;
+        defaultText = lib.literalExpression ''
+          if lib.versionAtLeast config.system.stateVersion "26.05" then
+            pkgs.mautrix-telegram-go
+          else
+            pkgs.mautrix-telegram
+        '';
+      };
 
       settings = lib.mkOption {
         type = lib.types.submodule {
