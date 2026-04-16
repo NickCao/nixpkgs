@@ -85,39 +85,19 @@ in
 
   config = lib.mkIf cfg.enable {
     services.mautrix-telegram.settings = {
-      homeserver = {
-        software = mkDefault "standard";
-      };
-
       appservice = {
         database = mkDefault "sqlite:///${dataDir}/mautrix-telegram.db";
-        database_opts = mkDefault { };
-        hostname = mkDefault "0.0.0.0";
         port = mkDefault 8080;
         address = mkDefault "http://localhost:${toString cfg.settings.appservice.port}";
       };
 
-      bridge = {
-        permissions."*" = mkDefault "relaybot";
-        relaybot.whitelist = mkDefault [ ];
-        double_puppet_server_map = mkDefault { };
-        login_shared_secret_map = mkDefault { };
-      };
+      bridge.permissions."*" = mkDefault "relaybot";
 
       logging = {
-        version = mkDefault 1;
-
         formatters.precise.format = mkDefault "[%(levelname)s@%(name)s] %(message)s";
-
-        handlers.console = {
-          class = mkDefault "logging.StreamHandler";
-          formatter = mkDefault "precise";
-        };
-
+        handlers.console.formatter = mkDefault "precise";
         loggers = {
           mau.level = mkDefault "INFO";
-          telethon.level = mkDefault "INFO";
-
           # prevent tokens from leaking in the logs:
           # https://github.com/tulir/mautrix-telegram/issues/351
           aiohttp.level = mkDefault "WARNING";
