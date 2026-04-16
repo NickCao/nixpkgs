@@ -167,7 +167,7 @@ in
 
         # generate the appservice's registration file if absent
         if [ ! -f '${registrationFile}' ]; then
-          ${cfg.package}/bin/mautrix-telegram \
+          ${lib.getExe cfg.package} \
             --generate-registration \
             --config='${settingsFile}' \
             --registration='${registrationFile}'
@@ -204,10 +204,7 @@ in
         UMask = "0027";
         EnvironmentFile = cfg.environmentFile;
 
-        ExecStart = ''
-          ${cfg.package}/bin/mautrix-telegram \
-            --config='${settingsFile}'
-        '';
+        ExecStart = "${lib.getExe cfg.package} --config='${settingsFile}";
       };
     };
   };
