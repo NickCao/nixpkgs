@@ -56,23 +56,19 @@ in
         type = lib.types.nullOr lib.types.path;
         default = null;
         description = ''
-          File containing environment variables to be passed to the mautrix-telegram service,
-          in which secret tokens can be specified securely by defining values for e.g.
-          `MAUTRIX_TELEGRAM_APPSERVICE_AS_TOKEN`,
-          `MAUTRIX_TELEGRAM_APPSERVICE_HS_TOKEN`,
-          `MAUTRIX_TELEGRAM_TELEGRAM_API_ID`,
-          `MAUTRIX_TELEGRAM_TELEGRAM_API_HASH` and optionally
-          `MAUTRIX_TELEGRAM_TELEGRAM_BOT_TOKEN`.
+          File containing environment variables to be passed to the mautrix-telegram service.
 
-          These environment variables can also be used to set other options by
-          replacing hierarchy levels by `.`, converting the name to uppercase
-          and prepending `MAUTRIX_TELEGRAM_`.
-          For example, the first value above maps to
-          {option}`settings.appservice.as_token`.
+          For the go version, the prefix for these environment variables defaults to `MAUTRIX_TELEGRAM_`.
+          All variables with this prefix must map to valid config fields. Nesting in variable names
+          is represented with a dot `.`. If there are no dots in the name, two underscores `__`
+          are replaced with a dot. E.g. `MAUTRIX_TELEGRAM_APPSERVICE__AS_TOKEN` will set
+          {option}`settings.appservice.as_token`. `MAUTRIX_TELEGRAM_appservice.as_token` would work as well.
 
-          The environment variable values can be prefixed with `json::` to have
-          them be parsed as JSON. For example, `login_shared_secret_map` can be
-          set as follows:
+          For the legacy python version, the prefix for these environment variables is also `MAUTRIX_TELEGRAM_`.
+          Nesting in variable names is represented with an underscore `_`.
+          E.g. `MAUTRIX_TELEGRAM_APPSERVICE_AS_TOKEN` will set {option}`settings.appservice.as_token`.
+          The environment variable values can be prefixed with `json::` to have them be parsed as JSON.
+          For example, `login_shared_secret_map` can be set as follows:
           `MAUTRIX_TELEGRAM_BRIDGE_LOGIN_SHARED_SECRET_MAP=json::{"example.com":"secret"}`.
         '';
       };
@@ -111,6 +107,7 @@ in
           type = mkDefault "sqlite3-fk-wal";
           uri = mkDefault "file:${dataDir}/mautrix-telegram.db?_txlock=immediate";
         };
+        env_config_prefix = "MAUTRIX_TELEGRAM_";
       })
       (lib.mkIf isPythonVersion {
         appservice = {
