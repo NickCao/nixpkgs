@@ -80,6 +80,7 @@ let
               "rspamd_proxy"
               "lua"
               "proxy"
+              "hs_helper"
             ]
           );
           description = ''
@@ -152,7 +153,14 @@ let
         };
       };
       config =
-        mkIf (name == "normal" || name == "controller" || name == "fuzzy" || name == "rspamd_proxy")
+        mkIf
+          (
+            name == "normal"
+            || name == "controller"
+            || name == "fuzzy"
+            || name == "rspamd_proxy"
+            || name == "hs_helper"
+          )
           {
             type = mkDefault name;
             includes = mkDefault [ "$CONFDIR/worker-${if name == "rspamd_proxy" then "proxy" else name}.inc" ];
@@ -192,6 +200,12 @@ let
       .include "$CONFDIR/options.inc"
       .include(try=true; priority=1,duplicate=merge) "$LOCAL_CONFDIR/local.d/options.inc"
       .include(try=true; priority=10) "$LOCAL_CONFDIR/override.d/options.inc"
+    }
+
+    lang_detection {
+        .include "$CONFDIR/lang_detection.inc"
+        .include(try=true; priority=1,duplicate=merge) "$LOCAL_CONFDIR/local.d/lang_detection.inc"
+        .include(try=true; priority=10) "$LOCAL_CONFDIR/override.d/lang_detection.inc"
     }
 
     logging {
@@ -354,6 +368,7 @@ in
         default = {
           normal = { };
           controller = { };
+          hs_helper = { };
         };
         example = literalExpression ''
           {
