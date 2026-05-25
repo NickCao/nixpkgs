@@ -24,11 +24,16 @@ stdenv.mkDerivation (finalAttrs: {
       url = "https://github.com/apalrd/tayga/commit/b41bd030846451d72b277854678b58370b1d5c8f.patch?full_index=1";
       hash = "sha256-vFQTlZs9ghxdx4k/iODDOUBAglyll1OxUdTjzDtcwB0=";
     })
-
     # Fix build w/ glibc-2.44
     (fetchpatch2 {
       url = "https://github.com/apalrd/tayga/commit/807fe4e4510e697fef6916cd76d393a8ab8e495e.patch?full_index=1";
       hash = "sha256-JqRKv5ZAlypQxYvhctBKPdWgC6Opxo1IV1niS5v2CfY=";
+    })
+    # Make every instance of tayga@.service have its own state directory
+    # https://github.com/apalrd/tayga/pull/171
+    (fetchpatch2 {
+      url = "https://github.com/apalrd/tayga/commit/a921cf2d916c3fea9aa69901137e738fa1837864.patch?full_index=1";
+      hash = "sha256-PG8oEEemZAJE/sQdVJFu1PRsn4N0HkxW3kwoPXzj27c=";
     })
   ];
 
