@@ -36,6 +36,7 @@
   libheif,
   libjxl,
   libicns,
+  wallet-engine,
   apple-sdk_15,
   nix-update-script,
 }:
@@ -54,17 +55,20 @@ let
     "kotatogram-desktop-unwrapped"
     "telegram-desktop-unwrapped"
   ];
+  needsWalletEngine = [
+    "telegram-desktop-unwrapped"
+  ];
 in
 stdenv.mkDerivation (finalAttrs: {
   pname = "telegram-desktop-unwrapped";
-  version = "7.2.9";
+  version = "7.3.1";
 
   src = fetchFromGitHub {
     owner = "telegramdesktop";
     repo = "tdesktop";
     rev = "v${finalAttrs.version}";
     fetchSubmodules = true;
-    hash = "sha256-AeeO3Ys+2MhNNPnMmu1AP8vs4ROK3X+Wh79x+Cizc6c=";
+    hash = "sha256-QoIfRLlNljoINAN28YgyP/6+E65bghNYD+H0U5lPQhs=";
   };
 
   nativeBuildInputs = [
@@ -108,6 +112,9 @@ stdenv.mkDerivation (finalAttrs: {
   ]
   ++ lib.optionals (lib.elem finalAttrs.pname needsPangoTlottie) [
     tlottie
+  ]
+  ++ lib.optionals (lib.elem finalAttrs.pname needsWalletEngine) [
+    wallet-engine
   ]
   ++ lib.optionals stdenv.hostPlatform.isDarwin [
     apple-sdk_15
