@@ -13,21 +13,21 @@
 
 buildGoModule rec {
   pname = "step-ca";
-  version = "0.30.2";
+  version = "0.30.2-unstable-2026-10-14";
 
   src = fetchFromGitHub {
     owner = "smallstep";
     repo = "certificates";
-    tag = "v${version}";
+    rev = "74be79c6f93c8f1b30212551b4d9d12fb12e48be";
     # Source uses git export-subst and isn't reproducible when fetching as git archive,
     # see https://github.com/smallstep/certificates/blob/6a1250131284dce4aa66c0e0e3f7a3202dd56ad0/.gitattributes.
     # Use forceFetchGit to fetch the source as git repo, as fetchGit isn't effected,
     # see https://github.com/NixOS/nixpkgs/issues/84312#issuecomment-2475948960.
     forceFetchGit = true;
-    hash = "sha256-4cvrjAVvMDHlNhY/lbfgl6ZvX5LJGnPx0Km2BjPX8iU=";
+    hash = "sha256-t0AYxq9d82m/jPzAb+LMrBheYkze1J3roz68tX2xKe8=";
   };
 
-  vendorHash = "sha256-FBkQXKNtstQ+F7jvKUj6oCbsri+SjGKy0tG59TtUHPQ=";
+  vendorHash = "sha256-mIt2mWbx7u+rsXB/dkAznhJfSAin0DLS7guYKyo+yIo=";
 
   ldflags = [
     "-w"
