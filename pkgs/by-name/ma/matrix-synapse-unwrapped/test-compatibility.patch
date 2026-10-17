@@ -1,0 +1,45 @@
+diff --git a/tests/handlers/test_oidc.py b/tests/handlers/test_oidc.py
+--- a/tests/handlers/test_oidc.py
++++ b/tests/handlers/test_oidc.py
+@@ -1155,13 +1155,14 @@
+         )
+         self.reset_mocks()
+ 
+-        # Some providers return an integer ID.
++        # Some providers return an integer ID from the userinfo endpoint.
+         userinfo = {
+             "sub": 1234,
+             "username": "test_user_2",
+         }
+-        request, _ = self.start_authorization(userinfo)
+-        self.get_success(self.handler.handle_oidc_callback(request))
++        with patch.object(self.provider, "_user_profile_method", "userinfo_endpoint"):
++            request, _ = self.start_authorization(userinfo, scope="")
++            self.get_success(self.handler.handle_oidc_callback(request))
+         self.complete_sso_login.assert_called_once_with(
+             "@test_user_2:test",
+             self.provider.idp_id,
+diff --git a/tests/rest/client/test_capabilities.py b/tests/rest/client/test_capabilities.py
+--- a/tests/rest/client/test_capabilities.py
++++ b/tests/rest/client/test_capabilities.py
+@@ -32,9 +32,9 @@
+ from tests.unittest import override_config, skip_unless
+ 
+ try:
+-    import lxml
++    import bs4
+ except ImportError:
+-    lxml = None  # type: ignore[assignment]
++    bs4 = None  # type: ignore[assignment]
+ 
+ 
+ class CapabilitiesTestCase(unittest.HomeserverTestCase):
+@@ -337,7 +337,7 @@
+         self.assertEqual(channel.code, HTTPStatus.OK)
+         self.assertFalse(capabilities["io.element.msc4452.preview_url"]["enabled"])
+ 
+-    @skip_unless(lxml is not None, "Requires lxml")
++    @skip_unless(bs4 is not None, "Requires beautifulsoup4")
+     @override_config(
+         {
+             "url_preview_enabled": True,

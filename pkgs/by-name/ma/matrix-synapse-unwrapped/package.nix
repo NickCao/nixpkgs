@@ -14,23 +14,24 @@
 
 python3Packages.buildPythonApplication rec {
   pname = "matrix-synapse";
-  version = "1.162.0";
+  version = "1.163.0";
   pyproject = true;
 
   src = fetchFromGitHub {
     owner = "element-hq";
     repo = "synapse";
     rev = "v${version}";
-    hash = "sha256-hDsbD0FU3fXR5mLRyoIP4qCC4pJKUu/js1Xe7je7DDo=";
+    hash = "sha256-SYqI8FYQOzDmdrSrdYJmkqFWTepNvpBPNncJOXDpXdY=";
   };
 
   patches = [
     ./storage_provider.patch
+    ./test-compatibility.patch
   ];
 
   cargoDeps = rustPlatform.fetchCargoVendor {
     inherit pname version src;
-    hash = "sha256-BYDW01vrtifxfrFw+bayhAkwXXqzOx7jMd7zHBPnHbA=";
+    hash = "sha256-0pQAseSE9cbQsGzZ1vLrHGt4+FKvqTr0bR3JhQuKPtc=";
   };
 
   build-system =
@@ -114,7 +115,7 @@ python3Packages.buildPythonApplication rec {
       systemd-python
     ];
     url-preview = [
-      lxml
+      beautifulsoup4
     ];
     sentry = [
       sentry-sdk
