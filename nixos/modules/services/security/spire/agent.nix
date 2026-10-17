@@ -130,16 +130,10 @@ in
   config = lib.mkIf cfg.enable {
     environment.systemPackages = [ cfg.package ];
 
-    # TODO: Switch to DynamicUser once https://github.com/NixOS/nixpkgs/issues/299476 lands
-    users.users.spire-agent = {
-      isSystemUser = true;
-      group = "spire-agent";
-    };
-    users.groups.spire-agent = { };
-
     systemd.services.spire-agent = {
       wantedBy = [ "multi-user.target" ];
       description = "SPIRE agent";
+      documentation = [ "https://spiffe.io/docs/latest/deploying/spire_agent/" ];
       serviceConfig = {
         ExecStart =
           "${lib.getExe' cfg.package "spire-agent"} run "
@@ -151,14 +145,8 @@ in
         StateDirectory = "spire/agent";
         StateDirectoryMode = "0700";
         RuntimeDirectory = "spire/agent/public";
-
-        # TODO: Switch to DynamicUser once https://github.com/NixOS/nixpkgs/issues/299476 lands
-        # Without it, the systemd plugin can not talk to dbus
-        # DynamicUser = true;
-        User = "spire-agent";
-        Group = "spire-agent";
+        DynamicUser = true;
         UMask = "0027";
-
         # TODO: Hardening
       };
     };
