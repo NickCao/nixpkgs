@@ -1,8 +1,8 @@
 diff --git a/synapse/media/media_repository.py b/synapse/media/media_repository.py
-index 3344e4c7..d3eab416 100644
+index 31bb401e65..6f4e6f1804 100644
 --- a/synapse/media/media_repository.py
 +++ b/synapse/media/media_repository.py
-@@ -343,7 +343,7 @@ class MediaRepository:
+@@ -348,7 +348,7 @@ class MediaRepository:
          file_info = FileInfo(server_name=None, file_id=media_id)
          sha256reader = SHA256TransparentIOReader(content)
          # This implements all of IO as it has a passthrough
@@ -11,7 +11,7 @@ index 3344e4c7..d3eab416 100644
          sha256 = sha256reader.hexdigest()
          should_quarantine = await self.store.get_is_hash_quarantined(sha256)
  
-@@ -1203,7 +1203,7 @@ class MediaRepository:
+@@ -1223,7 +1223,7 @@ class MediaRepository:
                      ),
                  )
  
@@ -20,7 +20,7 @@ index 3344e4c7..d3eab416 100644
                      t_byte_source, file_info
                  )
              finally:
-@@ -1211,8 +1211,6 @@ class MediaRepository:
+@@ -1231,8 +1231,6 @@ class MediaRepository:
  
              logger.info("Stored thumbnail in file %r", output_path)
  
@@ -29,7 +29,7 @@ index 3344e4c7..d3eab416 100644
              await self.store.store_local_thumbnail(
                  media_id,
                  t_width,
-@@ -1278,7 +1276,7 @@ class MediaRepository:
+@@ -1300,7 +1298,7 @@ class MediaRepository:
                      ),
                  )
  
@@ -38,7 +38,7 @@ index 3344e4c7..d3eab416 100644
                      t_byte_source, file_info
                  )
              finally:
-@@ -1286,8 +1284,6 @@ class MediaRepository:
+@@ -1308,8 +1306,6 @@ class MediaRepository:
  
              logger.info("Stored thumbnail in file %r", output_path)
  
@@ -48,7 +48,7 @@ index 3344e4c7..d3eab416 100644
                  server_name,
                  media_id,
 diff --git a/synapse/media/media_storage.py b/synapse/media/media_storage.py
-index 4c942f07..d735a500 100644
+index 4c942f07f8..31d31f93ce 100644
 --- a/synapse/media/media_storage.py
 +++ b/synapse/media/media_storage.py
 @@ -179,7 +179,7 @@ class MediaStorage:
@@ -60,10 +60,11 @@ index 4c942f07..d735a500 100644
          """Write `source` to the on disk media store, and also any other
          configured storage providers
  
-@@ -193,8 +193,9 @@ class MediaStorage:
+@@ -193,8 +193,10 @@ class MediaStorage:
          async with self.store_into_file(file_info) as (f, fname):
              # Write to the main media repository
              await self.write_to_file(source, f)
++            f.flush()
 +            fsize = os.path.getsize(fname)
  
 -        return fname
@@ -71,7 +72,7 @@ index 4c942f07..d735a500 100644
  
      @trace_with_opname("MediaStorage.write_to_file")
      async def write_to_file(self, source: IO, output: IO) -> None:
-@@ -261,7 +262,7 @@ class MediaStorage:
+@@ -261,7 +263,7 @@ class MediaStorage:
  
                  for provider in self.storage_providers:
                      with start_active_span(str(provider)):
@@ -81,7 +82,7 @@ index 4c942f07..d735a500 100644
                  # If using a temp file, delete it after uploading to storage providers
                  if is_temp_file:
 diff --git a/synapse/media/storage_provider.py b/synapse/media/storage_provider.py
-index c5faa25b..c9f561db 100644
+index c5faa25b96..c9f561db56 100644
 --- a/synapse/media/storage_provider.py
 +++ b/synapse/media/storage_provider.py
 @@ -44,13 +44,14 @@ class StorageProvider(metaclass=abc.ABCMeta):
@@ -126,3 +127,71 @@ index c5faa25b..c9f561db 100644
                      )
                  except Exception:
                      logger.exception("Error storing file")
+diff --git a/synapse/media/thumbnailer.py b/synapse/media/thumbnailer.py
+index 8e90aeb8de..13659047bc 100644
+--- a/synapse/media/thumbnailer.py
++++ b/synapse/media/thumbnailer.py
+@@ -38,11 +38,10 @@ from synapse.media._base import (
+     ThumbnailInfo,
+     check_for_cached_entry_and_respond,
+     respond_404,
+-    respond_with_file,
+     respond_with_multipart_responder,
+     respond_with_responder,
+ )
+-from synapse.media.media_storage import FileResponder, MediaStorage
++from synapse.media.media_storage import MediaStorage
+ from synapse.storage.databases.main.media_repository import LocalMedia
+ 
+ if TYPE_CHECKING:
+@@ -530,21 +529,23 @@ class ThumbnailProvider:
+         )
+ 
+         if thumbnail_result:
+-            file_path, file_info = thumbnail_result
++            _, file_info = thumbnail_result
+             assert file_info.thumbnail is not None
++            responder = await self.media_storage.fetch_media(file_info)
+ 
+             if for_federation:
+-                f = await defer_to_thread(self.hs.get_reactor(), open, file_path, "rb")
+                 await respond_with_multipart_responder(
+                     self.hs.get_clock(),
+                     request,
+-                    FileResponder(self.hs, f),
++                    responder,
+                     file_info.thumbnail.type,
+                     file_info.thumbnail.length,
+                     None,
+                 )
+             else:
+-                await respond_with_file(self.hs, request, desired_type, file_path)
++                await respond_with_responder(
++                    request, responder, desired_type, file_info.thumbnail.length
++                )
+         else:
+             logger.warning("Failed to generate thumbnail")
+             raise SynapseError(400, "Failed to generate thumbnail.")
+@@ -628,7 +629,21 @@ class ThumbnailProvider:
+         )
+ 
+         if file_path:
+-            await respond_with_file(self.hs, request, desired_type, file_path)
++            thumbnail_infos = await self.store.get_remote_media_thumbnails(
++                server_name, media_id
++            )
++            for info in thumbnail_infos:
++                if (
++                    (info.width, info.height, info.method, info.type)
++                    == (desired_width, desired_height, desired_method, desired_type)
++                ):
++                    file_info = FileInfo(server_name, file_id, thumbnail=info)
++                    responder = await self.media_storage.fetch_media(file_info)
++                    await respond_with_responder(
++                        request, responder, info.type, info.length
++                    )
++                    return
++            respond_404(request)
+         else:
+             logger.warning("Failed to generate thumbnail")
+             raise SynapseError(400, "Failed to generate thumbnail.")
