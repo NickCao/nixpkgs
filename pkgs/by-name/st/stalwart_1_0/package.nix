@@ -3,9 +3,9 @@
   rustPlatform,
   fetchFromGitHub,
   pkg-config,
-  protobuf,
+  aws-lc,
   bzip2,
-  openssl,
+  rust-jemalloc-sys-unprefixed,
   sqlite,
   foundationdb,
   zstd,
@@ -33,37 +33,32 @@ rustPlatform.buildRustPackage (finalAttrs: {
   cargoHash = "sha256-QOdPdcCa5HxckfMiNkgnkGMuOlRGIfMMylQs7QUGI5Q=";
 
   env = {
-    # Prefer system over vendor libraries to make it easier to patch/fix security vulnerabilities
-    OPENSSL_NO_VENDOR = true;
-    OPENSSL_DIR = lib.getDev openssl;
-    OPENSSL_LIB_DIR = "${lib.getLib openssl}/lib";
     ROCKSDB_INCLUDE_DIR = "${rocksdb_11_8}/include";
     ROCKSDB_LIB_DIR = "${rocksdb_11_8}/lib";
-
-    ZSTD_SYS_USE_PKG_CONFIG = true;
   }
   //
     lib.optionalAttrs
       (stdenv.hostPlatform.isLinux && (stdenv.hostPlatform.isAarch64 || stdenv.hostPlatform.isArmv7))
       {
         # Required to fix Stalwart on ARM systems with 16 KB page size.
-        # Using rust-jemalloc-sys causes segmentation faults on x86_64.
         JEMALLOC_SYS_WITH_LG_PAGE = 16;
       };
 
+  # for jieba-rs's include-flate proc macro
   depsBuildBuild = [
     pkg-config
     zstd
   ];
 
   nativeBuildInputs = [
-    protobuf
+    pkg-config
     rustPlatform.bindgenHook
   ];
 
   buildInputs = [
+    aws-lc
     bzip2
-    openssl
+    rust-jemalloc-sys-unprefixed
     sqlite
     zstd
   ]
