@@ -19,7 +19,7 @@
 }:
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "stalwart" + (lib.optionalString stalwartEnterprise "-enterprise");
-  version = "1.0.3";
+  version = "1.1.0";
 
   __structuredAttrs = true;
 
@@ -27,10 +27,10 @@ rustPlatform.buildRustPackage (finalAttrs: {
     owner = "stalwartlabs";
     repo = "stalwart";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-4NUb6Peivb5yG4jZSKUSwYijoF4JTvw4+u2uvN4tGqU=";
+    hash = "sha256-/HtAf1QkWz84Zv6vfLOhFVLDsdNlUucchMzDJC/GlE8=";
   };
 
-  cargoHash = "sha256-QOdPdcCa5HxckfMiNkgnkGMuOlRGIfMMylQs7QUGI5Q=";
+  cargoHash = "sha256-pbEwTTQm3NpsF8QKz6Q7TBOLC2Pl94HUyioYdTHYBL8=";
 
   env = {
     ROCKSDB_INCLUDE_DIR = "${rocksdb_11_8}/include";
@@ -73,6 +73,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
     "rocks"
     "s3"
     "redis"
+    "keep"
     "azure"
     "nats"
   ]
