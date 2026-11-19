@@ -8,16 +8,16 @@
 }:
 buildNpmPackage (finalAttrs: {
   pname = "webui";
-  version = "2.0.6";
+  version = "2.1.0";
 
   src = fetchFromGitHub {
     owner = "stalwartlabs";
     repo = "webui";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-PUfb0Di9W3T24zNUfmLLKcazv/qTvP5eFCfyb3+uuGw=";
+    hash = "sha256-iT+hQ4wRLDVVTW8VLvp3hcEcPoS3ywPWxKd23+9ixcU=";
   };
 
-  npmDepsHash = "sha256-AOgnRg8lcNvQUm7kAgdPKgttBj78pUz0oFU26C/7Z6A=";
+  npmDepsHash = "sha256-WUBJPAYrY+7oFlWd6MFwE7GzdRlLLcRcZOj1WXL3i/U=";
   __structuredAttrs = true;
 
   env = {
